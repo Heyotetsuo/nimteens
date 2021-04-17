@@ -74,7 +74,6 @@ function scaleShape(s){
 // ANIMATION
 function queueBlink(){
 	clearTimeout(BLINK_TO);
-	resetSeed();
 	BLINK_TO = setTimeout( ()=>render(blink=true), to1(nums[18])*10000+5000 );
 }
 function toggleBox(){
@@ -437,6 +436,7 @@ function drawBG(bIdx){
 
 // GOVERNANCE
 function render(blink){
+	resetSeed();
 	if(BOX){
 		var i=3,j=4,k=5;
 	}else{
@@ -462,7 +462,6 @@ function render(blink){
 }
 function init(){
 	cloudBuff=[],imgBuff=[],imgBuff2=[],nums=[],name={};
-	resetSeed();
 	kerns=[0,17,12.4,15,15.6,15.2,15.2],CVS=doc.querySelector("canvas");
 	C=CVS.getContext("2d");
 	clearTimeout(BLINK_TO);
