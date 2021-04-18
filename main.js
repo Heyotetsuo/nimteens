@@ -265,7 +265,19 @@ function drawCurve( a, b, c )
 
 
 // COMPLEX SHAPES
-function addBlob( x, y, sx, sy ){
+function addBlob( position, size, spread, count )
+{
+	var x = position[0], y = position[1];
+	var spx = spread[0], spy = spread[1];
+	var x1, y1, scale;
+	for( i=0; i<count; i++ )
+	{
+		x1 = x + rand()*size*spx;
+		y1 = y + rand()*size*spy;
+		scale = urand()*size*0.6 + size*0.4;
+		fillCircle( x1, y1, scale );
+	}
+	fillCircle( x, y, size );
 }
 function addCloud()
 {
@@ -315,26 +327,16 @@ function addCloud()
 		fillCircle( x1, y1, headsz );
 
 		// NECK
-		y1 = CD.a[1] + SZ/5;
-		for( i=0; i<count*2; i++ )
-		{
-			x2 = x1 + rand() * necksz;
-			y2 = y1 + rand() * necksz;
-			scale = urand() * necksz;
-			fillCircle( x2, y2, necksz );
-		}
-		fillCircle( x1, y1, necksz );
+		addBlob(
+			[ CD.a[0], CD.a[1]+SZ/5 ],
+			necksz, [1,1], count*2
+		);
 
 		// BODY
-		y1 = CD.a[1] + SZ/1.8;
-		for( i=0; i<count*8; i++ )
-		{
-			x2 = x1 + rand() * bodysz * 2;
-			y2 = y1 + rand() * bodysz * 2;
-			scale = urand() * bodysz + bodysz*0.4;
-			fillCircle( x2, y2, scale );
-		}
-		fillCircle( x1, y1, bodysz );
+		addBlob(
+			[ CD.a[0], CD.a[1]+SZ/1.8 ],
+			bodysz, [2,2], count*8
+		);
 	}
 
 	// CACHE
@@ -347,34 +349,24 @@ function addCloud()
 	x1 = CD.a[0], y1 = CD.a[1];
 	for( i=0; i<count; i++ )
 	{
-		x2 = x1 + a[i][0] * headsz * 2;
-		y2 = y1 + a[i][1] * headsz;
-		scale = a[i][2] * headsz/2 + headsz/2;
+		x2 = x1 + a[i][0]*headsz*2;
+		y2 = y1 + a[i][1]*headsz;
+		scale = a[i][2]*headsz/2 + headsz/2;
 		fillCircle( x2, y2, scale );
 	}
 	fillCircle( x1, y1, headsz );
 
 	// NECK
-	y1 = CD.a[1] + SZ/5;
-	for( i=0; i<count*2; i++ )
-	{
-		x2 = x1 + rand() * necksz;
-		y2 = y1 + rand() * necksz;
-		scale = urand() * necksz;
-		fillCircle( x2, y2, necksz );
-	}
-	fillCircle( x1, y1, necksz );
+	addBlob(
+		[ CD.a[0], CD.a[1]+SZ/5 ],
+		necksz, [1,1], count*2
+	);
 
 	// BODY
-	y1 = CD.a[1] + SZ/1.8;
-	for( i=0; i<count*8; i++ )
-	{
-		x2 = x1 + rand() * bodysz * 2
-		y2 = y1 + rand() * bodysz * 2
-		scale = urand() * bodysz;
-		fillCircle( x2, y2, bodysz );
-	}
-	fillCircle( CD.a[0], y2, bodysz );
+	addBlob(
+		[ CD.a[0], CD.a[1]+SZ/1.8 ],
+		bodysz, [2,2], count*8
+	);
 
 	C.restore();
 }
