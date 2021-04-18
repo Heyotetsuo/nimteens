@@ -28,7 +28,7 @@ function urand(n)
 function rand(n){ return urand(n)*2-1 };
 function getHypo(a,b){ return sqrt(abs(a*a+b*b)) };
 function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI) };
-function getPointInCircle(x,y,Rx,Ry)
+function getPointInCircle( x, y, Rx, Ry )
 {
 	var r = urand();
 	var rx = Rx*sqrt(r);
@@ -72,7 +72,8 @@ function getNums()
 
 
 // DEBUGGING
-function saveImg( i ){
+function saveImg( i )
+{
 	var url = CVS.toDataURL();
 	var img = doc.createElement( "img" );
 	img.src = url;
@@ -132,29 +133,41 @@ function toggleBox()
 // FILTERS
 function boxBlurT( src, tgt, w, h, r, H )
 {
-	var iarr = 1/(r*2+1);
 	var i, j, ti, li, ri, fv, lv, val;
+	var iarr = 1/(r*2+1);
 	for( i=0; i<w; i++ )
 	{
-		ti=i, li=ti, ri=ti+r*w, fv=src[ti], lv=src[ti+w*(h-1)], val=(r+1)*fv;
+		ti = i;
+		li = ti;
+		ri = ti + r*w;
+		fv = src[ti];
+		lv = src[ ti+w*(h-1) ];
+		val = ( r+1 )*fv;
 		for( j=0; j<r; j++ )
 		{
-			val += src[ti+j*w];
+			val += src[ ti + j*w ];
 		}
 		for( j=0; j<=r; j++ )
 		{
 			val += src[ri] - fv;
-			tgt[ti] = round( val*iarr ), ri+=w, ti+=w;
+			tgt[ti] = round( val*iarr );
+			ri += w;
+			ti += w;
 		}
 		for( j=r+1; j<h-r; j++ )
 		{
 			val += src[ri] - src[li];
-			tgt[ti] = round(val*iarr), li+=w, ri+=w, ti+=w;
+			tgt[ti] = round(val*iarr);
+			li += w;
+			ri += w;
+			ti += w;
 		}
 		for( j=h-r; j<h; j++ )
 		{
 			val += lv - src[li];
-			tgt[ti] = round(val*iarr), li+=w, ti+=w;
+			tgt[ti] = round( val*iarr );
+			li += w;
+			ti += w;
 		}
 	}
 }
@@ -162,42 +175,56 @@ function boxBlurH( src, tgt, w, h, r )
 {
 	var iarr = 1/(r*2+1);
 	var i, j, ti, li, ri, fv, lv, val;
-	for( i=0; i<h; i++)
+	for( i=0; i<h; i++ )
 	{
-		ti=i*w, li=ti, ri=ti+r, fv=src[ti], lv=src[ti+w-1], val=(r+1)*fv;
-		for( j=0; j<r; j++) val += src[ti+j];
+		ti = i*w;
+		li = ti;
+		ri = ti+r;
+		fv = src[ti];
+		lv = src[ ti + w-1 ];
+		val = ( r+1 )*fv;
+		for( j=0; j<r; j++)
+		{
+			val += src[ti+j];
+		}
 		for( j=0; j<=r; j++)
 		{
 			val += src[ri++] - fv;
-			tgt[ti++] = round(val*iarr);
+			tgt[ti++] = round( val*iarr );
 		}
 		for( j=r+1; j<w-r; j++)
 		{
 			val += src[ri++] - src[li++];
-			tgt[ti++] = round(val*iarr);
+			tgt[ti++] = round( val*iarr );
 		}
 		for( j=w-r; j<w; j++)
 		{
 			val += lv - src[li++];
-			tgt[ti++] = round(val*iarr);
+			tgt[ti++] = round( val*iarr );
 		}
 	}
 }
-function boxBlur(src, tgt, w, h, r)
+function boxBlur( src, tgt, w, h, r )
 {
 	for( var i=0; i<src.length; i++ )
 	{
-		tgt[i]=src[i];
+		tgt[i] = src[i];
 	}
 	boxBlurH( tgt, src, w, h, r );
 	boxBlurT( src, tgt, w, h, r );
 }
 function boxesForGauss( sigma, n )
 {
-	var wIdeal,wl,wu,mIdeal,m,sizes=[],i;
+	var wIdeal, mIdeal;
+	var wl, wu, m;
+	var sizes=[], i;
+
 	wIdeal = sqrt( (12*sigma*sigma/n)+1 );
-	wl = floor(wIdeal);
-	if( wl%2 == 0 ) wl--;
+	wl = floor( wIdeal );
+	if ( wl%2 == 0 )
+	{
+		wl--;
+	}
 	wu = wl+2;
 	mIdeal = (
 		12*sigma*sigma -
@@ -222,7 +249,7 @@ function gaussBlur( src, tgt, w, h, r )
 	boxBlur( tgt, src, w, h, (bxs[1]-1)/2 );
 	boxBlur( src, tgt, w, h, (bxs[2]-1)/2 );
 }
-function fastBlur(amount)
+function fastBlur( amount )
 {
 	var w = h = SZ, c=[], i, j;
 	var d = C.getImageData( 0, 0, w, h );
@@ -261,6 +288,15 @@ function fillCircle( x, y, r )
 	drawCircle( x, y, r );
 	C.fill();
 }
+function drawEllipse( x, y, sx, sy, r )
+{
+	C.save();
+	C.beginPath();
+	C.translate( x, y );
+	C.scale( sx, sy );
+	C.arc( 0, 0, r, 0, 2*PI, false );
+	C.restore();
+}
 function drawCircle( x, y, r )
 {
 	C.beginPath();
@@ -290,7 +326,7 @@ function addBlob( p, size, spread, count )
 		x2 = pos[0], y2 = pos[1];
 		fillCircle( x2, y2, size );
 	}
-	// fillCircle( x, y, size*1.5 );
+	fillCircle( x, y, size*1.5 );
 }
 function addCloud()
 {
@@ -382,98 +418,154 @@ function addBrow( x, y, offs, ang, blink )
 	if ( nums[2] > 128 && !blink ) return;
 	var len = CD.eyeSize*2.1;
 	C.save();
-	blink ? C.translate(x,y) : C.translate(x,y-CD.eyeSize*1.4);
+	if ( blink )
+	{
+		C.translate( x, y );
+	} else {
+		C.translate( x, y - CD.eyeSize*1.4 );
+	}
 	C.rotate( ang*PI/180 );
-	C.moveTo( len/-2,0 );
+	C.moveTo( len/-2, 0 );
 	C.beginPath();
-	C.lineTo( len/-2,0 );
-	C.lineTo( len/2,0 );
+	C.lineTo( len/-2, 0 );
+	C.lineTo( len/2, 0 );
 	C.stroke();
 	C.restore();
 }
 function addEye( x, y, offs )
 {
-	drawCircle(x, y, CD.eyeSize );
+	var x2 = x + offs[0] * (CD.eyeSize - SZ/80 - CD.pupSize);
+	var y2 = y + offs[1] * (CD.eyeSize - SZ/80 - CD.pupSize);
+	drawEllipse( x, y, 1.3, 0.6, CD.eyeSize );
 	C.stroke();
-	drawCircle(
-		x + offs[0] * ( CD.eyeSize-SZ / 80-CD.pupSize ),
-		y + offs[1] * ( CD.eyeSize-SZ / 80-CD.pupSize ),
-		CD.pupSize
-	);
+	drawCircle( x2, y2, CD.pupSize );
 	C.stroke();
 }
-function addShape(shape,s,o,fill,stroke,shad){
-	var vs=shape.verts, is=shape.ins||null, os=shape.outs||null, x=(o?o[0]:SZ/2), y=(o?o[1]:SZ/2), l=vs.length, ax,ay,bx,by,cx,cy,i;
+function addShape( shape, s, o, fill, stroke, shad )
+{
+	var ax, ay, bx, by, cx, cy, i;
+	var vs = shape.verts;
+	var is = shape.ins || null;
+	var os = shape.outs || null;
+	var x = ( o ? o[0] : SZ/2 );
+	var y = ( o ? o[1] : SZ/2 );
+	var l = vs.length;
 	C.save();
-	C.moveTo( vs[0][0]*s[0], vs[0][1]*s[1] );
+	C.moveTo(
+		vs[0][0]*s[0],
+		vs[0][1]*s[1]
+	);
 	C.beginPath();
-	for( i=0+l; i<=l+l; i++){
-		os ? ax = x+(vs[(i-1)%l][0]+os[(i-1)%l][0])*s[0]:null;
-		os ? ay = y+(vs[(i-1)%l][1]+os[(i-1)%l][1])*s[1]:null;
-		is ? bx = x+(vs[i%l][0]+is[i%l][0])*s[0]:null;
-		is ? by = y+(vs[i%l][1]+is[i%l][1])*s[1]:null;
-		cx = x+vs[i%l][0]*s[0];
-		cy = y+vs[i%l][1]*s[1];
-		if ( is && os ){
-			C.bezierCurveTo(ax,ay,bx,by,cx,cy);
+	for( i=0+l; i<=l+l; i++ )
+	{
+		ax = ay = bx = by = null;
+		if ( os )
+		{
+			ax = x + (
+				vs[ (i-1)%l ][0] +
+				os[ (i-1)%l ][0]
+			) * s[0];
+			ay = y + (
+				vs[ (i-1)%l ][1] +
+				os[ (i-1)%l ][1]
+			) * s[1];
+		}
+		if ( is )
+		{
+			bx = x + (
+				vs[ i%l ][0] +
+				is[ i%l ][0]
+			) * s[0];
+			by = y + (
+				vs[ i%l ][1] +
+				is[ i%l ][1]
+			) * s[1];
+		}
+		cx = x + vs[i%l][0] * s[0];
+		cy = y + vs[i%l][1] * s[1];
+		if ( is && os )
+		{
+			C.bezierCurveTo( ax, ay, bx, by, cx, cy );
 		} else {
-			C.lineTo(cx,cy);
+			C.lineTo( cx, cy );
 		}
 	}
 	C.closePath();
-	if (shad){
+	if ( shad )
+	{
 		C.shadowOffsetX = shad.offs[0];
 		C.shadowOffsetY = shad.offs[1];
 		C.shadowColor = shad.clr;
 	}
-	if (stroke){
+	if ( stroke )
+	{
 		C.lineWidth = stroke.width;
 		C.strokeStyle = stroke.style;
 		C.lineJoin = stroke.join;
 		C.stroke();
 	}
-	if (fill){
+	if ( fill )
+	{
 		C.fillStyle = fill;
 		C.fill();
 	}
 	C.restore();
 }
-function addLabel(){
+function addLabel()
+{
 	C.save();
-	var clr=["#F05878","#F2C01F","#35C1D4","#62C29C"], txt=["N","i","m","B","u","d","s"], rot=[3,-3,2,-2,1,-1,1],w=[0,17,12.4,15,15.6,15.2,15.2], p,x,y,i,r=17,k=SZ/256;
-	C.font = "italic "+SZ/10+"px Arial, sans-serif";
+	var clr = [ "#F05878", "#F2C01F", "#35C1D4", "#62C29C" ];
+	var txt = ["N", "i", "m", "B", "u", "d", "s"];
+	var rot = [3, -3, 2, -2, 1, -1, 1];
+	var w = [0, 17, 12.4, 15, 15.6, 15.2, 15.2];
+	var p, x, y, i, r=17, k=SZ/256;
+	C.font = "italic " + SZ/10 + "px Arial, sans-serif";
 	C.fontWeight = "900";
 	C.strokeStyle = "#fff";
 	C.fillStyle = "#fff";
 	C.lineWidth = SZ/30;
 	C.lineJoin = "round";
-	C.rotate(d2r(r*-1));
-	for(i=0;i<txt.length;i++){
-		C.rotate(d2r(rot[i]));
-		x=lp[0]+(i*k*w[i]);
-		C.strokeText(txt[i],x,lp[1]);
-		C.fillText(txt[i],x,lp[1]);
+	C.rotate( d2r(r*-1) );
+	for( i=0; i<txt.length; i++ )
+	{
+		C.rotate( d2r(rot[i]) );
+		x = lp[0] + ( i*k*w[i] );
+		C.strokeText( txt[i], x, lp[1] );
+		C.fillText( txt[i], x, lp[1] );
 	}
-	C.rotate(d2r(-1));
+	C.rotate( d2r(-1) );
 	C.lineWidth = SZ/128;
-	for(i=0;i<txt.length;i++){
-		C.rotate(d2r(rot[i]));
-		x=lp[0]+(i*k*w[i]);
+	for( i=0; i<txt.length; i++ )
+	{
+		C.rotate( d2r(rot[i]) );
+		x = lp[0]+( i*k*w[i] );
 		C.strokeStyle = clr[i%4];
-		C.strokeText(txt[i],x,lp[1]);
+		C.strokeText( txt[i], x, lp[1] );
 		C.fillStyle = clr[i%4];
-		C.fillText(txt[i],x,lp[1]);
+		C.fillText( txt[i], x, lp[1] );
 	}
-	C.rotate(d2r(r-1));
-	var clbl=[ [0,0,SZ/16], [SZ/-30,SZ/8,SZ/16], [SZ/-64,SZ/16,SZ/16], [SZ/14,SZ/48,SZ/16], [SZ/9,SZ/36,SZ/16], [SZ/5.5,SZ/48,SZ/16], [SZ/4.5,SZ/-64,SZ/16], [SZ/3.4,0,SZ/18], [SZ/2.8,SZ/-32,SZ/18] ];
+	C.rotate( d2r(r-1) );
+	var clbl=[
+		[0, 0, SZ/16], 
+		[SZ/-30, SZ/8, SZ/16], 
+		[SZ/-64, SZ/16, SZ/16], 
+		[SZ/14, SZ/48, SZ/16], 
+		[SZ/9, SZ/36, SZ/16], 
+		[SZ/5.5, SZ/48, SZ/16], 
+		[SZ/4.5, SZ/-64, SZ/16], 
+		[SZ/3.4, 0, SZ/18], 
+		[SZ/2.8, SZ/-32, SZ/18]
+	];
 	C.fillStyle="#D4EEF5";
-	for(i=0;i<clbl.length;i++){
-		p=clbl[i];
-		fillCircle(p[0],p[1],p[2]);
+	for( i=0; i<clbl.length; i++ )
+	{
+		p = clbl[i];
+		fillCircle( p[0], p[1], p[2] );
 	}
 	C.restore();
 }
-function addBox(){
+function addBox()
+{
 	var a = "#35C1D5", stk, shad, i;
 	C.fillStyle = "#ffffff20";
 	C.fillRect( 0, 0, SZ, SZ );
@@ -516,14 +608,14 @@ function addBox(){
 }
 function addBlush(p,s)
 {
-	var grad;
+	var grad, x = p[0], y = p[1];
 	C.save();
-	grad = C.createRadialGradient( p[0], p[1], 0, p[0], p[1], s );
+	grad = C.createRadialGradient( x, y, 0, x, y, s );
 	grad.addColorStop( 0, "#ff000020" );
 	grad.addColorStop( 1, "#ff000000" );
 	C.fillStyle = grad;
 	C.globalCompositeOperation = "hard-light";
-	C.fillRect( p[0]-s, p[1]-s, p[0]+s, p[1]+s );
+	C.fillRect( x-s, y-s, x+s, y+s );
 	C.restore();
 }
 function addMouth()
@@ -558,25 +650,25 @@ function addMouth()
 	{
 		stache = {
 			verts:[
-				[-93,-38],
-				[-52,6],
-				[0,-33],
-				[-41,-46],
-				[-68,-28]
-			],
+				[-93, -38], 
+				[-52, 6], 
+				[0, -33], 
+				[-41, -46], 
+				[-68, -28]
+			], 
 			ins: [
-				[9,-6],
-				[-29,-4],
-				[9,13],
-				[13,-5],
-				[9,-2]
-			],
+				[9, -6], 
+				[-29, -4], 
+				[9, 13], 
+				[13, -5], 
+				[9, -2]
+			], 
 			outs: [
-				[-10,0],
-				[58,8],
-				[-13,-17],
-				[-13,5],
-				[-16,4]
+				[-10, 0], 
+				[58, 8], 
+				[-13, -17], 
+				[-13, 5], 
+				[-16, 4]
 			]
 		};
 		scaleShape( stache );
@@ -596,11 +688,12 @@ function addMouth()
 }
 function addFace( blink, bIdx )
 {
-	var cidx, col, ang, offs, bl=( nums[15]<39 );
-	var e1, e2, ed, ang = to1N( nums[8] ) * 45;
+	var cidx, col, ang, offs, e1, e2, ed;
+	var bl = ( nums[15]<39 );
+	var ang = to1N( nums[8] ) * 45;
 	var sz = CD.headsize;
 	var x = CD.a[0];
-	var y = CD.a[1]-SZ/40;
+	var y = CD.a[1] - SZ/40;
 
 	cidx = nums[6] % CD.colors.length;
 	col = CD.colors[cidx];
@@ -615,26 +708,20 @@ function addFace( blink, bIdx )
 	C.lineCap = C.lineJoin = "round";
 
 	// EYES
-	e1 = [ x-SZ/24-ed, y ];
-	e2 = [ x+SZ/30+ed, y ];
+	e1 = [ x-SZ/24 - ed, y ];
+	e2 = [ x+SZ/30 + ed, y ];
 
 	// BLUSH
 	if ( bl )
 	{
-		addBlush(
-			[
-				e1[0] - SZ/10,
-				e1[1] + SZ/10
-			],
-			SZ/8
-		);
-		addBlush(
-			[
-				e2[0] + SZ/10,
-				e2[1] + SZ/10
-			],
-			SZ/8
-		);
+		addBlush([
+			e1[0] - SZ/10,
+			e1[1] + SZ/10
+		], SZ/8 );
+		addBlush([
+			e2[0] + SZ/10,
+			e2[1] + SZ/10
+		], SZ/8 );
 	}
 
 	// EYES
@@ -659,71 +746,83 @@ function addFace( blink, bIdx )
 	}
 	saveImg( bIdx );
 }
-function drawBG(bIdx){
-	if (bIdx && imgBuff[bIdx]){
-		C.drawImage(imgBuff[bIdx],0,0);
+function drawBG( bIdx )
+{
+	if ( bIdx && imgBuff[bIdx] )
+	{
+		C.drawImage( imgBuff[bIdx], 0, 0 );
 		return;
 	}
-	var count=nums[0]%28+4,grad,i, ca=CD.colors[1], cb="#0A6A7F";
-	grad=C.createRadialGradient(CD.a[0],CD.a[1],0,CD.a[0],CD.a[1],SZ);
-	if (EASTER || nums[0]<64){
-		CD.shadC='#0A6A7F'
+	var count = nums[0]%28+4;
+	var ca = CD.colors[1], cb = "#0A6A7F";
+	var grad, i;
+	var grad = C.createRadialGradient(
+		CD.a[0], CD.a[1], 0, 
+		CD.a[0], CD.a[1], SZ
+	);
+	if ( EASTER || nums[0]<64 )
+	{
+		CD.shadC = '#0A6A7F'
 	} else {
-		ca=CD.bgC, cb=CD.shadC;
+		ca = CD.bgC, cb = CD.shadC;
 	}
-	grad.addColorStop(0,ca);
-	grad.addColorStop(1,cb);
+	grad.addColorStop( 0, ca );
+	grad.addColorStop( 1, cb );
 	C.fillStyle = grad;
-	if ( !key ) C.fillRect(0,0,SZ,SZ);
-	fastBlur(8);
+	if ( !key )
+	{
+		C.fillRect( 0, 0, SZ, SZ );
+	}
+	fastBlur( 8 );
 	addCloud();
-	saveImg(bIdx);
+	saveImg( bIdx );
 	imgBuff[0] = imgBuff[bIdx];
 }
 
 
 
 // GOVERNANCE
-function render(blink){
+function render( blink )
+{
 	resetSeed();
-	if(BOX){
-		var i=3,j=4,k=5;
-	}else{
-		var i=0,j=1,k=2;
+	if( BOX )
+	{
+		var i=3, j=4, k=5;
+	} else {
+		var i=0, j=1, k=2;
 	}
-	if (blink){
-		if (!imgBuff[k]){
-			drawBG(i);
-			addFace(blink,k);
+	if ( blink ){
+		if ( !imgBuff[k] ){
+			drawBG( i );
+			addFace( blink, k );
 		} else {
-			C.drawImage(imgBuff[k],0,0);
+			C.drawImage( imgBuff[k], 0, 0 );
 		}
-		setTimeout(render,200);
+		setTimeout( render, 200 );
 	} else {
 		if ( !imgBuff[j] ){
 			drawBG(i);
-			addFace(blink,j);
+			addFace( blink, j );
 		} else {
-			C.drawImage(imgBuff[j],0,0);
+			C.drawImage( imgBuff[j], 0, 0 );
 		}
 	}
 	queueBlink();
 }
 function init()
 {
-	cloudBuff=[],imgBuff=[],nums=[];
-	CVS = doc.querySelector("canvas");
-	C = CVS.getContext("2d");
+	cloudBuff=[], imgBuff=[], nums=[];
+	CVS = doc.querySelector( "canvas" );
+	C = CVS.getContext( "2d" );
 
-	clearTimeout(BLINK_TO);
+	clearTimeout( BLINK_TO );
 
-	hidden = doc.createElement("div");
+	hidden = doc.createElement( "div" );
 	hidden.style.display = "none";
-	doc.body.appendChild(hidden);
-	CVS.addEventListener("click",toggleBox);
+	doc.body.appendChild( hidden );
+	CVS.addEventListener( "click", toggleBox );
 
 	var href = doc.location.href;
-
 	if (
 		href.match('localhost') ||
 		href.match('github')
@@ -732,7 +831,7 @@ function init()
 			win.innerWidth,
 			win.innerHeight
 		);
-		doc.body.style.marginTop="10vh";
+		doc.body.style.marginTop = "10vh";
 	} else {
 		SZ = Math.min(
 			win.innerWidth,
@@ -748,8 +847,13 @@ function init()
 		a: [ CTR, SZ/2-SZ/8 ],
 		shadBlur: SZ/67,
 		blur: SZ/80,
-		colors: [ "#f2668b", "#23c7d9", "#48d9a4", "#f2bf27" ],
-		bgC: "#f2f1df", shadC: "#c9c1a2", wireShadC: "#494102"
+		colors: [
+			"#f2668b", "#23c7d9",
+			"#48d9a4", "#f2bf27"
+		],
+		bgC: "#f2f1df",
+		shadC: "#c9c1a2",
+		wireShadC: "#494102"
 	};
 	lp = [ SZ/-96, SZ/4.2 ];
 	newHash();
