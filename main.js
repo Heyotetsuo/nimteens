@@ -314,12 +314,10 @@ function addCloud()
 	C.fillStyle = "white";
 
 	// HEAD
-	for( i=0; i<count*2; i++ )
+	for( i=0; i<count; i++ )
 	{
 		x2 = x1 + a[i][0] * headsz * 2;
 		y2 = y1 + a[i][1] * headsz;
-		x3 = x1 + rand() * bodysz;
-		y3 = SZ + rand() * bodysz;
 		scale = a[i][2] * headsz/2 + headsz/2;
 		fillCircle( x2, y2, scale );
 	}
@@ -338,7 +336,7 @@ function addCloud()
 
 	// BODY
 	y1 = CD.a[1] + SZ/1.8;
-	for( i=0; i<count; i++ )
+	for( i=0; i<count*2; i++ )
 	{
 		x2 = x1 + rand() * bodysz;
 		y2 = y1 + rand() * bodysz;
