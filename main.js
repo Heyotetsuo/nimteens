@@ -1,4 +1,4 @@
-var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,PI=Math.PI;
+var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,sin=Math.sin,cos=Math.cos,PI=Math.PI;
 var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed;
 var doc=document,win=window,hidden,BLINK_TO,BOX=false;
 var CVS,SZ,CTR,CD,C,EASTER=false;
@@ -28,6 +28,17 @@ function urand(n)
 function rand(n){ return urand(n)*2-1 };
 function getHypo(a,b){ return sqrt(abs(a*a+b*b)) };
 function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI) };
+function getPointInCircle(x,y,Rx,Ry)
+{
+	var r = urand();
+	var rx = Rx*sqrt(r);
+	var ry = Ry*sqrt(r);
+	var t = urand() * 2 * PI;
+	return [
+		x + rx*cos(t),
+		y + ry*sin(t)
+	];
+}
 function newHash()
 {
 	var a = [0,1,2,3,4,5,6,7,8,9,"a","b","c","d","e","f"];
@@ -265,28 +276,30 @@ function drawCurve( a, b, c )
 
 
 // COMPLEX SHAPES
-function addBlob( position, size, spread, count )
+function addBlob( p, size, spread, count )
 {
-	var x = position[0], y = position[1];
-	var spx = spread[0], spy = spread[1];
-	var x1, y1, scale;
+	var x=p[0], y=p[1], x2, y2;
+	var pos, rad = ( (spread[0]+spread[1])/2 );
 	for( i=0; i<count; i++ )
 	{
-		x1 = x + rand()*size*spx;
-		y1 = y + rand()*size*spy;
-		scale = urand()*size*0.6 + size*0.4;
-		fillCircle( x1, y1, scale );
+		pos = getPointInCircle(
+			x, y,
+			spread[0],
+			spread[1]
+		);
+		x2 = pos[0], y2 = pos[1];
+		fillCircle( x2, y2, size );
 	}
-	fillCircle( x, y, size );
+	// fillCircle( x, y, size*1.5 );
 }
 function addCloud()
 {
-	var x1, y1, x2, y2, x3, y3, scale;
+	var x = CD.a[0], y = CD.a[1];
 	var count = nums[0]%7 + 6;
 	var headsz = CD.headsize;
 	var bodysz = CD.bodysize;
 	var necksz = CD.headsize/2;
-	var a = [], i, j;
+	var x2, y2, x3, y3, scale, a=[], i, j;
 
 	// LOAD
 	if ( cloudBuff.length === 0 )
@@ -307,35 +320,32 @@ function addCloud()
 	C.save();
 
 	// Shift artifacts out of frame
-	C.translate( 0, SZ*-2 );
+	C.translate( 0, SZ*-3 );
 
 	// SHADOWS
-	C.shadowOffsetY = SZ*2 + SZ/16.7;
+	C.shadowOffsetY = SZ*3 + SZ/16.7;
 	C.shadowColor = CD.shadC;
 	C.shadowBlur = CD.shadBlur*4;
 	if ( !key )
 	{
-		// // HEAD
-		x1 = CD.a[0], y1 = CD.a[1];
+		// HEAD
 		for( i=0; i<count; i++ )
 		{
-			x2 = x1 + a[i][0]*headsz*2;
-			y2 = y1 + a[i][1]*headsz;
+			x2 = x + a[i][0]*headsz*2;
+			y2 = y + a[i][1]*headsz;
 			scale = a[i][2]*headsz*0.6 + headsz*0.4;
 			fillCircle( x2, y2, scale );
 		}
-		fillCircle( x1, y1, headsz );
+		fillCircle( x, y, headsz );
 
-		// NECK
+		// NECK AND BODY
 		addBlob(
-			[ CD.a[0], CD.a[1]+SZ/5 ],
-			necksz, [1,1], count*2
+			[ x, y + SZ/5 ],
+			necksz, [SZ/16, SZ/10], count*2
 		);
-
-		// BODY
 		addBlob(
-			[ CD.a[0], CD.a[1]+SZ/1.8 ],
-			bodysz, [2,2], count*8
+			[ x, y + SZ/2 ],
+			bodysz, [SZ/3, SZ/5], count*8
 		);
 	}
 
@@ -346,26 +356,23 @@ function addCloud()
 
 	// HEAD
 	C.fillStyle = "white";
-	x1 = CD.a[0], y1 = CD.a[1];
 	for( i=0; i<count; i++ )
 	{
-		x2 = x1 + a[i][0]*headsz*2;
-		y2 = y1 + a[i][1]*headsz;
+		x2 = x + a[i][0]*headsz*2;
+		y2 = y + a[i][1]*headsz;
 		scale = a[i][2]*headsz/2 + headsz/2;
 		fillCircle( x2, y2, scale );
 	}
-	fillCircle( x1, y1, headsz );
+	fillCircle( x, y, headsz );
 
-	// NECK
+	// NECK AND BODY
 	addBlob(
-		[ CD.a[0], CD.a[1]+SZ/5 ],
-		necksz, [1,1], count*2
+		[ x, y + SZ/5 ],
+		necksz, [SZ/16, SZ/10], count*2
 	);
-
-	// BODY
 	addBlob(
-		[ CD.a[0], CD.a[1]+SZ/1.8 ],
-		bodysz, [2,2], count*8
+		[ x, y + SZ/2 ],
+		bodysz, [SZ/3, SZ/5], count*8
 	);
 
 	C.restore();
@@ -524,7 +531,6 @@ function addMouth()
 	var x = CD.a[0];
 	var y = CD.a[1] + SZ/10;
 	var sz = CD.headsize/SZ;
-	console.log( "sz: " + sz );
 	var offs = [
 		to1( nums[4] )*( SZ/6.7 )*sz,
 		to1N( nums[5] )*( SZ/20 )*sz
@@ -577,19 +583,13 @@ function addMouth()
 		addShape(
 			stache,
 			[ ss, ss ],
-			[
-				ctr[0],
-				ctr[1] + offs[1]/2
-			],
+			[ x, y+offs[1]/2 ],
 			"#9c6f50"
 		);
 		addShape(
 			stache,
 			[ ss*-1, ss ],
-			[
-				ctr[0],
-				ctr[1] + offs[1]/2
-			],
+			[ x, y+offs[1]/2 ],
 			"#9c6f50"
 		);
 	}
@@ -615,8 +615,8 @@ function addFace( blink, bIdx )
 	C.lineCap = C.lineJoin = "round";
 
 	// EYES
-	e1 = [ x-SZ/16-ed, y ];
-	e2 = [ x+SZ/20+ed, y ];
+	e1 = [ x-SZ/24-ed, y ];
+	e2 = [ x+SZ/30+ed, y ];
 
 	// BLUSH
 	if ( bl )
@@ -626,14 +626,14 @@ function addFace( blink, bIdx )
 				e1[0] - SZ/10,
 				e1[1] + SZ/10
 			],
-			SZ/6
+			SZ/8
 		);
 		addBlush(
 			[
 				e2[0] + SZ/10,
 				e2[1] + SZ/10
 			],
-			SZ/6
+			SZ/8
 		);
 	}
 
