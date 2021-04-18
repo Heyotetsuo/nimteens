@@ -265,9 +265,11 @@ function drawCurve( a, b, c )
 
 
 // COMPLEX SHAPES
+function addBlob( x, y, sx, sy ){
+}
 function addCloud()
 {
-	var x1 = CD.a[0], y1 = CD.a[1], x2, y2, x3, y3, scale;
+	var x1, y1, x2, y2, x3, y3, scale;
 	var count = nums[0]%7 + 6;
 	var headsz = CD.headsize;
 	var bodysz = CD.bodysize;
@@ -292,28 +294,57 @@ function addCloud()
 	a = cloudBuff;
 	C.save();
 
+	// Shift artifacts out of frame
+	C.translate( 0, SZ*-2 );
+
 	// SHADOWS
-	C.translate( 0, SZ*-1 );
+	C.shadowOffsetY = SZ*2 + SZ/16.7;
+	C.shadowColor = CD.shadC;
+	C.shadowBlur = CD.shadBlur*4;
 	if ( !key )
 	{
+		// // HEAD
+		x1 = CD.a[0], y1 = CD.a[1];
 		for( i=0; i<count; i++ )
 		{
 			x2 = x1 + a[i][0]*headsz*2;
 			y2 = y1 + a[i][1]*headsz;
 			scale = a[i][2]*headsz*0.6 + headsz*0.4;
-			C.shadowOffsetY = SZ + SZ/16.7;
-			C.shadowColor = CD.shadC;
-			C.shadowBlur = CD.shadBlur*4;
 			fillCircle( x2, y2, scale );
 		}
+		fillCircle( x1, y1, headsz );
+
+		// NECK
+		y1 = CD.a[1] + SZ/5;
+		for( i=0; i<count*2; i++ )
+		{
+			x2 = x1 + rand() * necksz;
+			y2 = y1 + rand() * necksz;
+			scale = urand() * necksz;
+			fillCircle( x2, y2, necksz );
+		}
+		fillCircle( x1, y1, necksz );
+
+		// BODY
+		y1 = CD.a[1] + SZ/1.8;
+		for( i=0; i<count*8; i++ )
+		{
+			x2 = x1 + rand() * bodysz * 2;
+			y2 = y1 + rand() * bodysz * 2;
+			scale = urand() * bodysz + bodysz*0.4;
+			fillCircle( x2, y2, scale );
+		}
+		fillCircle( x1, y1, bodysz );
 	}
-	fillCircle( x1, y1, headsz );
+
+	// CACHE
+	resetSeed();
 	C.restore();
 	C.save();
 
-	C.fillStyle = "white";
-
 	// HEAD
+	C.fillStyle = "white";
+	x1 = CD.a[0], y1 = CD.a[1];
 	for( i=0; i<count; i++ )
 	{
 		x2 = x1 + a[i][0] * headsz * 2;
@@ -336,10 +367,10 @@ function addCloud()
 
 	// BODY
 	y1 = CD.a[1] + SZ/1.8;
-	for( i=0; i<count*2; i++ )
+	for( i=0; i<count*8; i++ )
 	{
-		x2 = x1 + rand() * bodysz;
-		y2 = y1 + rand() * bodysz;
+		x2 = x1 + rand() * bodysz * 2
+		y2 = y1 + rand() * bodysz * 2
 		scale = urand() * bodysz;
 		fillCircle( x2, y2, bodysz );
 	}
@@ -720,7 +751,7 @@ function init()
 	CTR = SZ/2;
 	CD = {
 		lineWidth: SZ/80,
-		headsize: SZ/6.5, bodysize: SZ/5,
+		headsize: SZ/6.5, bodysize: SZ/8,
 		eyeSize: SZ/28, pupSize: SZ/200,
 		a: [ CTR, SZ/2-SZ/8 ],
 		shadBlur: SZ/67,
