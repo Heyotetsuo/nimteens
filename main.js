@@ -381,7 +381,7 @@ function addCloud()
 		);
 		addBlob(
 			[ x, y + SZ/2 ],
-			bodysz, [SZ/3, SZ/5], count*8
+			bodysz, [SZ/3-bodysz, SZ/5], count*8
 		);
 	}
 
@@ -408,7 +408,7 @@ function addCloud()
 	);
 	addBlob(
 		[ x, y + SZ/2 ],
-		bodysz, [SZ/3, SZ/5], count*8
+		bodysz, [SZ/3-bodysz, SZ/5], count*8
 	);
 
 	C.restore();
@@ -436,7 +436,7 @@ function addEye( x, y, offs )
 {
 	var x2 = x + offs[0] * (CD.eyeSize - SZ/80 - CD.pupSize);
 	var y2 = y + offs[1] * (CD.eyeSize - SZ/80 - CD.pupSize);
-	drawEllipse( x, y, 1.3, 0.6, CD.eyeSize );
+	drawEllipse( x, y, 1.15, 0.85, CD.eyeSize );
 	C.stroke();
 	drawCircle( x2, y2, CD.pupSize );
 	C.stroke();
@@ -691,7 +691,6 @@ function addFace( blink, bIdx )
 	var cidx, col, ang, offs, e1, e2, ed;
 	var bl = ( nums[15]<39 );
 	var ang = to1N( nums[8] ) * 45;
-	var sz = CD.headsize;
 	var x = CD.a[0];
 	var y = CD.a[1] - SZ/40;
 
