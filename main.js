@@ -314,7 +314,7 @@ function addCloud()
 	C.fillStyle = "white";
 
 	// HEAD
-	for( i=0; i<count; i++ )
+	for( i=0; i<count*2; i++ )
 	{
 		x2 = x1 + a[i][0] * headsz * 2;
 		y2 = y1 + a[i][1] * headsz;
@@ -327,7 +327,7 @@ function addCloud()
 
 	// NECK
 	y1 = CD.a[1] + SZ/5;
-	for( i=0; i<count; i++ )
+	for( i=0; i<count*2; i++ )
 	{
 		x2 = x1 + rand() * necksz;
 		y2 = y1 + rand() * necksz;
