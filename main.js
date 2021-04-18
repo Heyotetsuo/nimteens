@@ -716,11 +716,11 @@ function addFace( blink, bIdx )
 		addBlush([
 			e1[0] - SZ/10,
 			e1[1] + SZ/10
-		], SZ/8 );
+		], SZ/10 );
 		addBlush([
 			e2[0] + SZ/10,
 			e2[1] + SZ/10
-		], SZ/8 );
+		], SZ/10 );
 	}
 
 	// EYES
