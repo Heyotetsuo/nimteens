@@ -1,4 +1,4 @@
-var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max;
 var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed;
 var doc=document,win=window,hidden,BLINK_TO,BOX=false;
 var CVS,SZ,CTR,CD,C,EASTER=false;
@@ -696,7 +696,7 @@ function addFace( blink, bIdx )
 
 	cidx = nums[6] % CD.colors.length;
 	col = CD.colors[cidx];
-	ed = to1( nums[7] ) * ( SZ/17 );
+	ed = max( 6, to1(nums[7])*(SZ/17) );
 	offs = [
 		to1N( nums[9] ),
 		to1N( nums[10] )
