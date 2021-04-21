@@ -95,7 +95,7 @@ function setDebug( n )
 
 
 // TRANSFORMATION
-function scaleShape( s )
+function scaleShape( s, n )
 {
 	var p, i, j, v;
 	for( p in s )
@@ -105,7 +105,7 @@ function scaleShape( s )
 			for( j=0; j<2; j++ )
 			{
 				v = s[p][i][j];
-				s[p][i][j] *= SZ/800;
+				s[p][i][j] *= n;
 			}
 		}
 	}
@@ -332,9 +332,9 @@ function addCloud()
 {
 	var x = CD.a[0], y = CD.a[1];
 	var count = nums[0]%7 + 6;
-	var headsz = CD.headsize;
+	var headsz = (SZ/5)*CD.headsize;
 	var bodysz = CD.bodysize;
-	var necksz = CD.headsize/2;
+	var necksz = (SZ/6.5)/2;
 	var x2, y2, x3, y3, scale, a=[], i, j;
 
 	// LOAD
@@ -410,6 +410,10 @@ function addCloud()
 		[ x, y + SZ/2 ],
 		bodysz, [SZ/3-bodysz, SZ/5], count*8
 	);
+	addBlob(
+		[ x, SZ ],
+		bodysz*1.2, [SZ/3-bodysz, SZ/5], count*8
+	);
 
 	C.restore();
 }
@@ -434,11 +438,12 @@ function addBrow( x, y, offs, ang, blink )
 }
 function addEye( x, y, offs )
 {
-	var x2 = x + offs[0] * (CD.eyeSize - SZ/80 - CD.pupSize);
-	var y2 = y + offs[1] * (CD.eyeSize - SZ/80 - CD.pupSize);
-	drawEllipse( x, y, 1.15, 0.85, CD.eyeSize );
+	var sz = CD.headsize;
+	var x2 = x + offs[0] * (SZ/40 - CD.pupSize);
+	var y2 = y;
+	drawEllipse( x, y, 1.15, 0.85, CD.eyeSize*sz );
 	C.stroke();
-	drawCircle( x2, y2, CD.pupSize );
+	drawCircle( x2, y2, CD.pupSize*sz );
 	C.stroke();
 }
 function addShape( shape, s, o, fill, stroke, shad )
@@ -606,6 +611,19 @@ function addBox()
 	addShape( p1, [1,1], [0,0], null, stk, shad );
 	addShape( p2, [1,1], [0,0], a, stk );
 }
+function addFreckles()
+{
+	var i,c,x,y,rx,ry,sz,mouthhgt;
+	c = randuint(100);
+	C.fillColor( "red" );
+	for( i=0; i<c; i++)
+	{
+	rx = urand();
+		x - rx*mouthsz;
+		y = ry*mouthhght;
+		C.fillCircle( x, y, SZ/400 );
+	}
+}
 function addBlush(p,s)
 {
 	var grad, x = p[0], y = p[1];
@@ -622,12 +640,12 @@ function addMouth()
 {
 	var x = CD.a[0];
 	var y = CD.a[1] + SZ/10;
-	var sz = CD.headsize/SZ;
 	var offs = [
-		to1( nums[4] )*( SZ/6.7 )*sz,
-		to1N( nums[5] )*( SZ/20 )*sz
+		to1( nums[4] )*( SZ/8 ),
+		to1N( nums[5] )*( SZ/40 )
 	];
-	var a = offs[0], b = offs[1], c = getHypo( a, b );
+	var a = offs[0], b = offs[1];
+	var c = getHypo( a, b );
 	var ss = 0.66, ang = getAngle( a, b, c );
 	var p1, p2, p3;
 
@@ -671,7 +689,7 @@ function addMouth()
 				[-16, 4]
 			]
 		};
-		scaleShape( stache );
+		scaleShape( stache, SZ/800*CD.headsize );
 		addShape(
 			stache,
 			[ ss, ss ],
@@ -692,7 +710,8 @@ function addFace( blink, bIdx )
 	var bl = ( nums[15]<39 );
 	var ang = to1N( nums[8] ) * 45;
 	var x = CD.a[0];
-	var y = CD.a[1] - SZ/40;
+	var y = CD.a[1];
+	var sz = CD.headsize;
 
 	cidx = nums[6] % CD.colors.length;
 	col = CD.colors[cidx];
@@ -707,8 +726,8 @@ function addFace( blink, bIdx )
 	C.lineCap = C.lineJoin = "round";
 
 	// EYES
-	e1 = [ x-SZ/24 - ed, y ];
-	e2 = [ x+SZ/30 + ed, y ];
+	e1 = [ x-SZ/24*sz - ed*sz, y ];
+	e2 = [ x+SZ/30*sz + ed*sz, y ];
 
 	// BLUSH
 	if ( bl )
@@ -716,11 +735,11 @@ function addFace( blink, bIdx )
 		addBlush([
 			e1[0] - SZ/10,
 			e1[1] + SZ/10
-		], SZ/10 );
+		], SZ/6 );
 		addBlush([
 			e2[0] + SZ/10,
 			e2[1] + SZ/10
-		], SZ/10 );
+		], SZ/6 );
 	}
 
 	// EYES
@@ -841,9 +860,9 @@ function init()
 	CTR = SZ/2;
 	CD = {
 		lineWidth: SZ/80,
-		headsize: SZ/6.5, bodysize: SZ/8,
+		headsize: 1, bodysize: SZ/8,
 		eyeSize: SZ/28, pupSize: SZ/200,
-		a: [ CTR, SZ/2-SZ/8 ],
+		a: [ CTR, CTR - SZ/8 ],
 		shadBlur: SZ/67,
 		blur: SZ/80,
 		colors: [
@@ -855,7 +874,7 @@ function init()
 		wireShadC: "#494102"
 	};
 	lp = [ SZ/-96, SZ/4.2 ];
-	newHash();
+		newHash();
 	nums = getNums();
 }
 function main(n)
