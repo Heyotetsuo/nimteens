@@ -1,5 +1,5 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max;
-var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed;
+var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed,mask;
 var doc=document,win=window,hidden,BLINK_TO,BOX=false;
 var CVS,SZ,CTR,CD,C,EASTER=false;
 
@@ -297,6 +297,17 @@ function drawEllipse( x, y, sx, sy, r )
 	C.arc( 0, 0, r, 0, 2*PI, false );
 	C.restore();
 }
+function fillMask( color )
+{
+	C.clip( mask, "nonzero" );
+	C.fillStyle = color;
+	C.fillRect( 0, 0, SZ, SZ );
+}
+function maskCircle( x, y, r )
+{
+	mask.arc( x, y, r, 0, 2*PI );
+	mask.closePath();
+}
 function drawCircle( x, y, r )
 {
 	C.beginPath();
@@ -312,7 +323,7 @@ function drawCurve( a, b, c )
 
 
 // COMPLEX SHAPES
-function addBlob( p, size, spread, count )
+function addBlob( p, size, spread, count, clip )
 {
 	var x=p[0], y=p[1], x2, y2;
 	var pos, rad = ( (spread[0]+spread[1])/2 );
@@ -323,10 +334,20 @@ function addBlob( p, size, spread, count )
 			spread[0],
 			spread[1]
 		);
-		x2 = pos[0], y2 = pos[1];
-		fillCircle( x2, y2, size );
+		x2=pos[0], y2=pos[1];
+		if ( clip )
+		{
+			maskCircle( x2, y2, size );
+		} else {
+			drawCircle( x2, y2, size );
+		}
 	}
-	fillCircle( x, y, size*1.5 );
+	if ( clip )
+	{
+		maskCircle( x, y, size*1.5 );
+	} else {
+		drawCircle( x, y, size*1.5 );
+	}
 }
 function addCloud()
 {
@@ -370,18 +391,18 @@ function addCloud()
 			x2 = x + a[i][0]*headsz*2;
 			y2 = y + a[i][1]*headsz;
 			scale = a[i][2]*headsz*0.6 + headsz*0.4;
-			fillCircle( x2, y2, scale );
+			drawCircle( x2, y2, scale );
 		}
-		fillCircle( x, y, headsz );
+		drawCircle( x, y, headsz );
 
 		// NECK AND BODY
 		addBlob(
-			[ x, y + SZ/5 ],
-			necksz, [SZ/16, SZ/10], count*2
+			[ x, y + SZ/5 ], necksz,
+			[SZ/16, SZ/10], count*2
 		);
 		addBlob(
-			[ x, y + SZ/2 ],
-			bodysz, [SZ/3-bodysz, SZ/5], count*8
+			[ x, y + SZ/2 ], bodysz,
+			[SZ/3-bodysz, SZ/5], count*8
 		);
 	}
 
@@ -391,29 +412,33 @@ function addCloud()
 	C.save();
 
 	// HEAD
-	C.fillStyle = "white";
+	mask = new Path2D();
 	for( i=0; i<count; i++ )
 	{
 		x2 = x + a[i][0]*headsz*2;
 		y2 = y + a[i][1]*headsz;
 		scale = a[i][2]*headsz/2 + headsz/2;
-		fillCircle( x2, y2, scale );
+		maskCircle( x2, y2, scale );
 	}
-	fillCircle( x, y, headsz );
+	maskCircle( x, y, headsz );
 
 	// NECK AND BODY
 	addBlob(
-		[ x, y + SZ/5 ],
-		necksz, [SZ/16, SZ/10], count*2
+		[ x, y + SZ/5 ],necksz,
+		[SZ/16, SZ/10], count*2,
+		true
 	);
 	addBlob(
-		[ x, y + SZ/2 ],
-		bodysz, [SZ/3-bodysz, SZ/5], count*8
+		[ x, y + SZ/2 ], bodysz,
+		[SZ/3-bodysz, SZ/5], count*8,
+		true
 	);
 	addBlob(
-		[ x, SZ ],
-		bodysz*1.2, [SZ/3-bodysz, SZ/5], count*8
+		[ x, SZ ], bodysz*1.2,
+		[SZ/3-bodysz, SZ/5], count*8,
+		true
 	);
+	fillMask( "white" );
 
 	C.restore();
 }
@@ -436,12 +461,18 @@ function addBrow( x, y, offs, ang, blink )
 	C.stroke();
 	C.restore();
 }
-function addEye( x, y, offs )
+function addEye( x, y, offs, stroke )
 {
 	var sz = CD.headsize;
 	var x2 = x + offs[0] * (SZ/40 - CD.pupSize);
 	var y2 = y;
+	C.strokeStyle = "gray";
+	drawEllipse( x, y+SZ/200, 1.14, 0.93, CD.eyeSize*sz );
+	C.stroke();
+	C.strokeStyle = stroke;
+	C.fillStyle = "white";
 	drawEllipse( x, y, 1.15, 0.85, CD.eyeSize*sz );
+	C.fill();
 	C.stroke();
 	drawCircle( x2, y2, CD.pupSize*sz );
 	C.stroke();
@@ -611,17 +642,17 @@ function addBox()
 	addShape( p1, [1,1], [0,0], null, stk, shad );
 	addShape( p2, [1,1], [0,0], a, stk );
 }
-function addFreckles()
+function addFreckles( w, h )
 {
-	var i,c,x,y,rx,ry,sz,mouthhgt;
-	c = randuint(100);
-	C.fillColor( "red" );
-	for( i=0; i<c; i++)
+	var c=randuint()%75+50;
+	var sz=SZ/10, i,p;
+	var x=CD.a[0], y=CD.a[1]+SZ/20;
+	C.fillStyle = "#fa7";
+	C.clip( mask, "nonzero" );
+	for( i=0; i<c; i++ )
 	{
-	rx = urand();
-		x - rx*mouthsz;
-		y = ry*mouthhght;
-		C.fillCircle( x, y, SZ/400 );
+		p = getPointInCircle( x, y, sz*2, sz/2 );
+		fillCircle( p[0], p[1], SZ/400*urand() );
 	}
 }
 function addBlush(p,s)
@@ -648,6 +679,8 @@ function addMouth()
 	var c = getHypo( a, b );
 	var ss = 0.66, ang = getAngle( a, b, c );
 	var p1, p2, p3;
+
+	addFreckles( offs[0], offs[1] );
 
 	// DRAW MOUTH
 	if ( ang < 7 ) offs[1] = 0; // flat mouth
@@ -742,11 +775,14 @@ function addFace( blink, bIdx )
 		], SZ/6 );
 	}
 
+	// MOUTH
+	addMouth();
+
 	// EYES
 	if( !blink )
 	{
-		addEye( e1[0], e1[1], offs );
-		addEye( e2[0], e2[1], offs );
+		addEye( e1[0], e1[1], offs, col );
+		addEye( e2[0], e2[1], offs, col );
 		addBrow( e1[0], e1[1], offs, ang );
 		addBrow( e2[0], e2[1], offs, ang*-1 );
 	} else {
@@ -754,7 +790,6 @@ function addFace( blink, bIdx )
 		addBrow( e2[0], e2[1], [0, 0], 0, blink );
 	}
 
-	addMouth();
 	C.miterLimit = 0;
 	C.restore();
 	if ( BOX )
@@ -832,6 +867,7 @@ function init()
 	cloudBuff=[], imgBuff=[], nums=[];
 	CVS = doc.querySelector( "canvas" );
 	C = CVS.getContext( "2d" );
+	mask = new Path2D();
 
 	clearTimeout( BLINK_TO );
 
