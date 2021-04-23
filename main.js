@@ -1,6 +1,5 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max;
 var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed,mask;
-var brand = [ "#F05878", "#F2C01F", "#35C1D4", "#62C29C" ];
 var doc=document,win=window,hidden,BLINK_TO,BOX=false;
 var CVS,SZ,CTR,CD,C,EASTER=false;
 
@@ -27,14 +26,6 @@ function urand(n)
 	return ((seed<0 ? ~seed+1 : seed) % 1024) / 1024;
 }
 function rand(n){ return urand(n)*2-1 };
-function getRandHex(){ return (randuint()%16).toString(16); }
-function getRandCol()
-{
-	return "#" +
-		getRandHex() +
-		getRandHex() +
-		getRandHex();
-}
 function getHypo(a,b){ return sqrt(abs(a*a+b*b)) };
 function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI) };
 function getPointInCircle( x, y, Rx, Ry )
@@ -748,15 +739,16 @@ function addMouth()
 }
 function addFace( blink, bIdx )
 {
-	var cidx, col, ang, offs, e1, e2, ed;
+	var cidx, ang, offs, e1, e2, ed, col, bagCol;
 	var bl = ( nums[15]<39 );
 	var ang = to1N( nums[8] ) * 45;
-	var x = CD.a[0];
-	var y = CD.a[1];
+	var x = CD.a[0], y = CD.a[1];
 	var sz = CD.headsize*1.2
+	var bagCol = CD.darkColors[cidx];
 
 	cidx = nums[6] % CD.colors.length;
 	col = CD.colors[cidx];
+	bagCol = CD.darkColors[cidx];
 	ed = max( 6, to1(nums[7])*(SZ/17) );
 	offs = [
 		to1N( nums[9] ),
@@ -764,7 +756,6 @@ function addFace( blink, bIdx )
 	];
 	C.save();
 	C.strokeStyle = col;
-	var bagCol = brand[randuint()%4];
 	C.lineWidth = CD.lineWidth;
 	C.lineCap = C.lineJoin = "round";
 
@@ -914,6 +905,9 @@ function init()
 		colors: [
 			"#f2668b", "#23c7d9",
 			"#48d9a4", "#f2bf27"
+		], darkColors: [
+			"#813345", "#126374",
+			"#247452", "#815813"
 		],
 		bgC: "#f2f1df",
 		shadC: "#c9c1a2",
