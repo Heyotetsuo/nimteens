@@ -1,5 +1,6 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max;
 var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed,mask;
+var brand = [ "#F05878", "#F2C01F", "#35C1D4", "#62C29C" ];
 var doc=document,win=window,hidden,BLINK_TO,BOX=false;
 var CVS,SZ,CTR,CD,C,EASTER=false;
 
@@ -26,6 +27,14 @@ function urand(n)
 	return ((seed<0 ? ~seed+1 : seed) % 1024) / 1024;
 }
 function rand(n){ return urand(n)*2-1 };
+function getRandHex(){ return (randuint()%16).toString(16); }
+function getRandCol()
+{
+	return "#" +
+		getRandHex() +
+		getRandHex() +
+		getRandHex();
+}
 function getHypo(a,b){ return sqrt(abs(a*a+b*b)) };
 function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI) };
 function getPointInCircle( x, y, Rx, Ry )
@@ -339,14 +348,14 @@ function addBlob( p, size, spread, count, clip )
 		{
 			maskCircle( x2, y2, size );
 		} else {
-			drawCircle( x2, y2, size );
+			fillCircle( x2, y2, size );
 		}
 	}
 	if ( clip )
 	{
 		maskCircle( x, y, size*1.5 );
 	} else {
-		drawCircle( x, y, size*1.5 );
+		fillCircle( x, y, size*1.5 );
 	}
 }
 function addCloud()
@@ -390,10 +399,10 @@ function addCloud()
 		{
 			x2 = x + a[i][0]*headsz*2;
 			y2 = y + a[i][1]*headsz;
-			scale = a[i][2]*headsz*0.6 + headsz*0.4;
-			drawCircle( x2, y2, scale );
+			scale = a[i][2]*headsz*0.4 + headsz*0.4;
+			fillCircle( x2, y2, scale );
 		}
-		drawCircle( x, y, headsz );
+		fillCircle( x, y, headsz );
 
 		// NECK AND BODY
 		addBlob(
@@ -417,10 +426,10 @@ function addCloud()
 	{
 		x2 = x + a[i][0]*headsz*2;
 		y2 = y + a[i][1]*headsz;
-		scale = a[i][2]*headsz/2 + headsz/2;
+		scale = a[i][2]*headsz*0.4 + headsz*0.4;
 		maskCircle( x2, y2, scale );
 	}
-	maskCircle( x, y, headsz );
+	maskCircle( x, y, headsz*0.8 );
 
 	// NECK AND BODY
 	addBlob(
@@ -461,12 +470,12 @@ function addBrow( x, y, offs, ang, blink )
 	C.stroke();
 	C.restore();
 }
-function addEye( x, y, offs, stroke )
+function addEye( x, y, offs, stroke, bagCol )
 {
 	var sz = CD.headsize;
 	var x2 = x + offs[0] * (SZ/40 - CD.pupSize);
 	var y2 = y;
-	C.strokeStyle = "gray";
+	C.strokeStyle = bagCol;
 	drawEllipse( x, y+SZ/200, 1.14, 0.93, CD.eyeSize*sz );
 	C.stroke();
 	C.strokeStyle = stroke;
@@ -744,7 +753,7 @@ function addFace( blink, bIdx )
 	var ang = to1N( nums[8] ) * 45;
 	var x = CD.a[0];
 	var y = CD.a[1];
-	var sz = CD.headsize;
+	var sz = CD.headsize*1.2
 
 	cidx = nums[6] % CD.colors.length;
 	col = CD.colors[cidx];
@@ -755,6 +764,7 @@ function addFace( blink, bIdx )
 	];
 	C.save();
 	C.strokeStyle = col;
+	var bagCol = brand[randuint()%4];
 	C.lineWidth = CD.lineWidth;
 	C.lineCap = C.lineJoin = "round";
 
@@ -781,8 +791,8 @@ function addFace( blink, bIdx )
 	// EYES
 	if( !blink )
 	{
-		addEye( e1[0], e1[1], offs, col );
-		addEye( e2[0], e2[1], offs, col );
+		addEye( e1[0], e1[1], offs, col, bagCol );
+		addEye( e2[0], e2[1], offs, col, bagCol );
 		addBrow( e1[0], e1[1], offs, ang );
 		addBrow( e2[0], e2[1], offs, ang*-1 );
 	} else {
@@ -896,7 +906,7 @@ function init()
 	CTR = SZ/2;
 	CD = {
 		lineWidth: SZ/80,
-		headsize: 1, bodysize: SZ/8,
+		headsize: 1.2, bodysize: SZ/8,
 		eyeSize: SZ/28, pupSize: SZ/200,
 		a: [ CTR, CTR - SZ/8 ],
 		shadBlur: SZ/67,
