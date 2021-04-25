@@ -642,17 +642,19 @@ function addBox()
 	addShape( p1, [1,1], [0,0], null, stk, shad );
 	addShape( p2, [1,1], [0,0], a, stk );
 }
-function addFreckles( w, h )
+function addFreckles( x1, x2, h )
 {
-	var c=randuint()%75+50;
-	var sz=SZ/10, i,p;
-	var x=CD.a[0], y=CD.a[1]+SZ/20;
+	var c=randuint()%50+25;
+	var sz=SZ/12, i,p1,p2;
+	var x=CD.a[0], y=CD.a[1]+sz/2;
 	C.fillStyle = "#fa7";
 	C.clip( mask, "nonzero" );
 	for( i=0; i<c; i++ )
 	{
-		p = getPointInCircle( x, y, sz*2, sz/2 );
-		fillCircle( p[0], p[1], SZ/400*urand() );
+		p1 = getPointInCircle( x1, y, sz, sz/2 );
+		p2 = getPointInCircle( x2, y, sz, sz/2 );
+		fillCircle( p1[0], p1[1], SZ/400*urand() );
+		fillCircle( p2[0], p2[1], SZ/400*urand() );
 	}
 }
 function addBlush(p,s)
@@ -667,7 +669,7 @@ function addBlush(p,s)
 	C.fillRect( x-s, y-s, x+s, y+s );
 	C.restore();
 }
-function addMouth()
+function addMouth( e1, e2 )
 {
 	var x = CD.a[0];
 	var y = CD.a[1] + SZ/10;
@@ -680,7 +682,7 @@ function addMouth()
 	var ss = 0.66, ang = getAngle( a, b, c );
 	var p1, p2, p3;
 
-	addFreckles( offs[0], offs[1] );
+	addFreckles( e1[0], e2[0], offs[1] );;
 
 	// DRAW MOUTH
 	if ( ang < 7 ) offs[1] = 0; // flat mouth
@@ -777,7 +779,7 @@ function addFace( blink, bIdx )
 	}
 
 	// MOUTH
-	addMouth();
+	addMouth( e1, e2 );
 
 	// EYES
 	if( !blink )
