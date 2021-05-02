@@ -362,7 +362,7 @@ function drawCurve( a, b, c )
 
 
 // COMPLEX SHAPES
-function addWind( a, b )
+function addComb( a, b )
 {
 	// get vectors a,b and wind ( V, VW ) 
 	var v = getVec( a, b );
@@ -370,7 +370,7 @@ function addWind( a, b )
 	var w = CD.windWeight;
 
 	// get vector length
-	var l = 80 || max( 80, getVecLen(v) );
+	var l = max( 80, getVecLen(v) );
 
 	// get wind "position" (100% weight)
 	var c = arrMath(
@@ -709,7 +709,7 @@ function addBox()
         addShape( p1, [1,1], [0,0], null, stk, shad );
         addShape( p2, [1,1], [0,0], a, stk );
 }
-function drawWire(a,b,c)
+function drawHair( a, b, c, clr )
 {
 	drawCurve(a,b,c);
 	C.save();
@@ -717,11 +717,10 @@ function drawWire(a,b,c)
 	C.fillStyle = "rgba(0,0,0,0)";
 	C.strokeStyle = "black";
 	C.lineWidth = CD.lineWidth;
-	C.lineCap = "round";
 	C.stroke();
 	C.restore();
 }
-function colorWire( a, b, c, clr )
+function colorHair( a, b, c, clr )
 {
 	drawCurve(a,b,c);
 	C.save();
@@ -732,7 +731,7 @@ function colorWire( a, b, c, clr )
 	for(var i=0; i<SZ/40; i++) C.stroke();
 	C.restore();
 }
-function addWire( i )
+function addStrand( i )
 {
         var color = nums[i]%CD.colors.length;
         var dangl = nums[i]<85;
@@ -746,7 +745,7 @@ function addWire( i )
         x3 = to1N(nums[(i+5)%32]);
 	a = [
 		x + x1*hairw/2,
-		y - y1*hairh-hairh/2
+		y - y1*hairh-hairh/1.5
 	];
 	b = [
 		a[0] + x2*hairw/2,
@@ -758,19 +757,19 @@ function addWire( i )
 	];
 
 	// WIND
-	b2 = addWind( a, b );
+	b2 = addComb( a, b );
 	c = arrMath( c, arrMath(b,b2,'-'), '+' );
 	b = b2;
-	c = addWind( b, c );
+	c = addComb( b, c );
 
-        drawWire( a, b, c );
-        colorWire( a, b, c, color );
+        drawHair( a, b, c );
+        colorHair( a, b, c, color );
 }
-function addWires( c, shadow )
+function addHair( c, shadow )
 {
         for( var i=0; i<c; i++ )
         {
-                addWire( i, shadow );
+                addStrand( i );
         }
 }
 function addFreckles( x1, x2, h )
@@ -928,7 +927,7 @@ function addFace( blink, bIdx )
 
         C.miterLimit = 0;
         C.restore();
-        addWires( nums[0]%7+6 );
+        addHair( nums[0]%7+6 );
         if ( BOX )
         {
                 addBox();
