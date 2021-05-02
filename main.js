@@ -534,9 +534,20 @@ function addEye( x, y, offs, stroke, bagCol )
         var sz = CD.headsize;
         var x2 = x + offs[0] * (SZ/40 - CD.pupSize);
         var y2 = y;
-        C.strokeStyle = bagCol;
-        drawEllipse( x, y+SZ/200, 1.14, 0.93, CD.eyeSize*sz );
-        C.stroke();
+
+	// EYE BAGS
+	var bagY = y+SZ/100
+        drawEllipse( x, bagY, 1, 1, CD.eyeSize*sz*1.3 );
+	var grad = C.createRadialGradient(
+		x, bagY, 0,
+		x, bagY, CD.eyeSize*sz*1.3
+	);
+	grad.addColorStop( 0.5, bagCol );
+	grad.addColorStop( 1, bagCol+"00" );
+	C.fillStyle = grad;
+        C.fill();
+
+	C.shadowColor = "#00000000";
         C.strokeStyle = stroke;
         C.fillStyle = "white";
         drawEllipse( x, y, 1.15, 0.85, CD.eyeSize*sz );
@@ -778,6 +789,7 @@ function addFreckles( x1, x2, h )
         var c=urandint()%50+25;
         var sz=SZ/12, i,p1,p2;
         var x=CD.a[0], y=CD.a[1]+sz/2;
+	C.save();
         C.fillStyle = "#fa7";
         C.clip( mask, "nonzero" );
         for( i=0; i<c; i++ )
@@ -787,6 +799,7 @@ function addFreckles( x1, x2, h )
                 fillCircle( p1[0], p1[1], SZ/400*urand() );
                 fillCircle( p2[0], p2[1], SZ/400*urand() );
         }
+	C.restore();
 }
 function addBlush(p,s)
 {
