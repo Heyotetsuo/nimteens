@@ -362,12 +362,11 @@ function drawCurve( a, b, c )
 
 
 // COMPLEX SHAPES
-function addComb( a, b )
+function addComb( a, b, w )
 {
 	// get vectors a,b and wind ( V, VW ) 
 	var v = getVec( a, b );
 	var vw = CD.wind;
-	var w = CD.windWeight;
 
 	// get vector length
 	var l = max( 80, getVecLen(v) );
@@ -476,6 +475,9 @@ function addCloud()
         resetSeed();
         C.restore();
         C.save();
+
+	// BG HAIR
+        addHair( urandint()%200+200 );
 
         // HEAD
         mask = new Path2D();
@@ -731,21 +733,20 @@ function colorHair( a, b, c, clr )
 	for(var i=0; i<SZ/40; i++) C.stroke();
 	C.restore();
 }
-function addStrand( i )
+function addStrand()
 {
-        var color = nums[i]%CD.colors.length;
-        var dangl = nums[i]<85;
-	var hairh = SZ/CD.headsize/8;
-	var hairw = SZ/CD.headsize/4;
+        var color = urandint()%CD.colors.length;
+	var hairh = SZ/CD.headsize/6;
+	var hairw = SZ/CD.headsize/3;
         var a,b,b2,c, v, x1,x2,x3, i, xdiff;
 
         x = CD.a[0], y = CD.a[1];
-        x1 = to1N(nums[(i+1)%32]), y1 = to1(nums[(i+2)%32]);
-        x2 = to1N(nums[(i+3)%32]), y2 = to1N( nums[(i+4)%32] );
-        x3 = to1N(nums[(i+5)%32]);
+	x1 = rand(), y1 = urand();
+	x2 = rand(), y2 = rand();
+	x3 = rand();
 	a = [
 		x + x1*hairw/2,
-		y - y1*hairh-hairh/1.5
+		y - y1*hairh-hairh/1.33
 	];
 	b = [
 		a[0] + x2*hairw/2,
@@ -757,15 +758,15 @@ function addStrand( i )
 	];
 
 	// WIND
-	b2 = addComb( a, b );
+	b2 = addComb( a, b, CD.windWeight );
 	c = arrMath( c, arrMath(b,b2,'-'), '+' );
 	b = b2;
-	c = addComb( b, c );
+	c = addComb( b, c, CD.windWeight/2 );
 
         drawHair( a, b, c );
         colorHair( a, b, c, color );
 }
-function addHair( c, shadow )
+function addHair( c )
 {
         for( var i=0; i<c; i++ )
         {
@@ -923,11 +924,11 @@ function addFace( blink, bIdx )
                 addBrow( e2[0], e2[1], [0, 0], 0, blink );
         }
 
-	// HAIR
+	// FG HAIR
+        addHair( urandint()%40+20 );
 
         C.miterLimit = 0;
         C.restore();
-        addHair( nums[0]%7+6 );
         if ( BOX )
         {
                 addBox();
