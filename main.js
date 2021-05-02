@@ -510,7 +510,7 @@ function addCloud()
 
         C.restore();
 }
-function addBrow( x, y, offs, ang, blink )
+function addBrow( x, y, ang, blink )
 {
         if ( nums[2] > 128 && !blink ) return;
         var len = CD.eyeSize*2.1;
@@ -757,7 +757,7 @@ function addStrand()
 	x3 = rand();
 	a = [
 		x + x1*hairw/2,
-		y - y1*hairh-hairh/1.33
+		y - y1*hairh-hairh
 	];
 	b = [
 		a[0] + x2*hairw/2,
@@ -887,7 +887,7 @@ function addFace( blink, bIdx )
 {
         var cidx, ang, offs, e1, e2, ed, col, bagCol;
         var bl = ( nums[15]<39 );
-        var ang = to1N( nums[8] ) * 45;
+        var ang = to1N( nums[8] ) * 36;
         var x = CD.a[0], y = CD.a[1];
         var sz = CD.headsize*1.2
         var bagCol = CD.darkColors[cidx];
@@ -930,11 +930,11 @@ function addFace( blink, bIdx )
         {
                 addEye( e1[0], e1[1], offs, col, bagCol );
                 addEye( e2[0], e2[1], offs, col, bagCol );
-                addBrow( e1[0], e1[1], offs, ang );
-                addBrow( e2[0], e2[1], offs, ang*-1 );
+                addBrow( e1[0], e1[1], ang );
+                addBrow( e2[0], e2[1], ang*-1 );
         } else {
-                addBrow( e1[0], e1[1], [0, 0], 0, blink );
-                addBrow( e2[0], e2[1], [0, 0], 0, blink );
+                addBrow( e1[0], e1[1], 0, blink );
+                addBrow( e2[0], e2[1], 0, blink );
         }
 
 	// FG HAIR
