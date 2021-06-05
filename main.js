@@ -1,12 +1,12 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,asin=Math.asin,acos=Math.acos,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max,pow=Math.pow;
-var cloudBuff,imgBuff,nums,lp,tmp,stache,key,seed,mask;
+var cloudBuff,imgBuff,nums,lp,stache,key,seed,mask;
 var doc=document,win=window,hidden,BLINK_TO,BOX=false;
 var CVS,SZ,CTR,CD,C,EASTER=false;
 
 // RANDOMNESS
 function urandint(n)
 {
-        return abs( randint(n) )
+        return abs( randint(n) );
 }
 function randint(n)
 {
@@ -21,11 +21,12 @@ function urand(n)
         var seed = randint( n );
         return ((seed<0 ? ~seed+1 : seed) % 1024) / 1024;
 }
-function rand(n){ return urand(n)*2-1 };
+function rand(n){ return urand(n)*2-1; }
 function newHash()
+// get a new hash altogether
 {
-        var a = [0,1,2,3,4,5,6,7,8,9,"a","b","c","d","e","f"];
-        var s="", i;
+        var a = [0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f'];
+        var s='', i;
         for( i=0; i<64; i++ )
         {
                 s += a[ floor(rnd() * a.length) ];
@@ -33,6 +34,7 @@ function newHash()
         tokenData.hash = "0x" + s;
 }
 function resetSeed()
+// rewind to beginning of PRNG seed results
 {
         seed = parseInt(
                 tokenData.hash.slice( 0, 16 ),
@@ -48,14 +50,48 @@ function getNums()
                         tokenData.hash.slice( 2+(j*2), 4+(j*2) )
                 );
         }
-        rvs = hashPairs.map( n=>parseInt(n,16) );
+        rvs = hashPairs.map( function(n){ return parseInt(n,16); } );
         return rvs;
+}
+function getRange( a, b )
+{
+	var min = urandint()%(b-a)+a;
+	var max = urandint()%(b-a)+a;
+	if ( max < min )
+	{
+		var tmpmin = max;
+		max = min;
+		min = tmpmin;
+	}
+	return [min, max];
+}
+function getPalette()
+// gets a random palette based off the normal CD.colors array
+{
+	var pal = copyArray( CD.colors );
+	var n = urandint()%pal.length;
+	var a = [], i, cIdx;
+	for( i=0; i<n; i++ )
+	{
+		idx = urandint()%pal.length;
+		a.push( pal.splice(cIdx) );
+	}
+	return a;
 }
 
 
 
-// STRING MANIPULATION AND LOGGING
-function logf( s, a ) { console.log( printf(s,a) ) }
+// HELPERS
+function logf( s, a ) { console.log( printf(s,a) ); }
+function alertf( s, a )
+{
+	var A = [];
+	for (var i=0; i<a.length; i++ )
+	{
+		A.push( a[i].toString() );
+	}
+	alert( printf(s,A) );
+}
 function printf( s, a )
 {
 	var S=s, i;
@@ -65,37 +101,76 @@ function printf( s, a )
 	}
 	return S;
 }
+function isArray( o )
+{
+	if ( o instanceof Array )
+	{
+		return true;
+	} else {
+		return false;
+	}
+}
+function copyArray( a )
+{
+	var b = [];
+	for ( var i=0; i<a.length; i++ )
+	{
+		b.push( a[i] );
+	}
+	return b;
+}
 
 
 
 // MATH
-function normInt(s){ return parseInt(s,32)-SZ };
-function d2r(n){ return n*PI/180 };
-function r2d(n){ return n*180/PI };
-function to1(n){ return n/255 };
-function to1N(n){ return n/128-1 };
-function getVec( a, b ){ return [ a[0]-b[0], a[1]-b[1] ] }
-function getVecLen( v ){ return sqrt( pow(v[0],2) + pow(v[1],2) ) }
+function normInt(s){ return parseInt(s,32)-SZ; }
+function d2r(n){ return n*PI/180; }
+function r2d(n){ return n*180/PI; }
+function to1(n){ return n/255; }
+function to1N(n){ return n/128-1; }
+function getVec( a, b ){ return [ a[0]-b[0], a[1]-b[1] ]; }
+function getVecLen( v ){ return sqrt( pow(v[0],2) + pow(v[1],2) ); }
 function arrMath( a, b, op )
 {
-	var c=[], i;
-	var chcode = (op).charCodeAt();
+	var A, B, c=[], i;
 	for( i=0; i<a.length; i++ )
 	{
-		c[i] = (
-			( op==='+'&&a[i]+b[i] ) ||
-			( op==='-'&&a[i]-b[i] ) ||
-			( op==='*'&&a[i]*b[i] ) ||
-			( op==='/'&&a[i]/b[i] ) ||
-			( op==='^'&&pow(a[i],b[i]) )
-		);
+		isArray(a) ?  A = a[i] : A = a;
+		isArray(b) ? B = b[i] : B = b;
+
+		if ( isArray(A) || isArray(B) )
+		{
+			c[i] = arrMath( A, B, op );
+			continue;
+		}
+		
+		switch( op )
+		{
+		case '+':
+			c[i] = A + B;
+			break;
+		case '-':
+			c[i] = A - B;
+			break;
+		case '*':
+			c[i] = A * B;
+			break;
+		case '/':
+			c[i] = A / B;
+			break;
+		case '^':
+			c[i] = pow(A,B);
+			break;
+		default:
+			break;
+		}
 	}
 	return c;
 }
-function d2r( deg ){ return deg*PI/180 }
-function r2d( rad ){ return rad*180/PI }
-function getHypo(a,b){ return sqrt(abs(a*a+b*b)) }
-function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI) }
+function d2r( deg ){ return deg*PI/180; }
+function r2d( rad ){ return rad*180/PI; }
+function getHypo(a,b){ return sqrt(abs(a*a+b*b)); }
+function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI); }
 function getPointInCircle( x, y, Rx, Ry )
 {
         var r = urand();
@@ -157,7 +232,7 @@ function queueBlink()
 {
         clearTimeout( BLINK_TO );
         BLINK_TO = setTimeout(
-                ()=>render( blink=true ),
+                function(){ render( blink=true ); },
                 to1( nums[18] ) * 10000 + 5000
         );
 }
@@ -290,33 +365,33 @@ function gaussBlur( src, tgt, w, h, r )
 }
 function fastBlur( amount )
 {
-        var w = h = SZ, c=[], i, j;
-        var d = C.getImageData( 0, 0, w, h );
-        for( i=0; i<3; i++ )
-        {
-                c.push(
-                        new Uint8ClampedArray( d.data.length/4 )
-                );
-        }
-        for( i=0; i<d.data.length; i+=4 )
-        {
-                for( j=0; j<c.length; j++ )
-                {
-                        c[j][i/4] = (d.data[i+j]);
-                }
-        }
-        for( i=0; i<c.length; i++ )
-        {
-                gaussBlur( c[i], c[i], w, h, amount );
-        }
-        for( i=0; i<d.data.length; i+=4 )
-        {
-                for( j=0; j<c.length; j++ )
-                {
-                        d.data[i+j] = c[j][i/4];
-                }
-        }
-        C.putImageData( d, 0, 0 );
+	var w = h = SZ, c=[], i, j;
+	var d = C.getImageData( 0, 0, w, h );
+	for( i=0; i<3; i++ )
+	{
+		c.push(
+			new Uint8ClampedArray( d.data.length/4 )
+		);
+	}
+	for( i=0; i<d.data.length; i+=4 )
+	{
+		for( j=0; j<c.length; j++ )
+		{
+			c[j][i/4] = (d.data[i+j]);
+		}
+	}
+	for( i=0; i<c.length; i++ )
+	{
+		gaussBlur( c[i], c[i], w, h, amount );
+	}
+	for( i=0; i<d.data.length; i+=4 )
+	{
+		for( j=0; j<c.length; j++ )
+		{
+			d.data[i+j] = c[j][i/4];
+		}
+	}
+	C.putImageData( d, 0, 0 );
 }
 
 
@@ -358,10 +433,77 @@ function drawCurve( a, b, c )
         C.moveTo( a[0], a[1] );
         C.quadraticCurveTo( b[0], b[1], c[0], c[1] );
 }
+function drawLine( a, b )
+{
+	C.beginPath();
+        C.moveTo( a[0], a[1] );
+	C.lineTo( b[0], b[1] );
+}
+function getRndLine()
+{
+	var a = [ urandint()%SZ, urandint()%SZ ];
+	var b = [ urandint()%SZ, urandint()%SZ ];
+	
+	if ( a[0]<a[1] ) a[0]=0; else a[1]=0;
+	if ( b[0]>b[1] ) b[0]=SZ; else b[1]=SZ;
+
+	return [a,b];
+}
 
 
 
 // COMPLEX SHAPES
+function addLaser( line, sz )
+{
+	drawLine( line[0], line[1] );
+	C.lineWidth = sz;
+	for( var i=0; i<10; i++ )
+	{
+		C.lineWidth -= sz/10;
+		C.stroke();
+	}
+}
+function addLasers()
+{
+	// make laser attributes: MINSZ(int), MAXSZ(int), COUNT(int)
+	var laserSz = getRange( 1, 100 );
+	var minSz = laserSz[0], maxSz = laserSz[1];
+	var laserN = urandint()%40, sz, i;
+
+	// make a palette PAL[](string)
+	var pal = getPalette();
+
+	// make rnd parent path PPATH[2][2](float)
+	var pPath = getRndLine(), path, diff, newPath;
+
+	// make a weight WEIGHT(float) btwn 0 and 1
+	var w = urand()%1;
+
+	C.save();
+	C.strokeStyle = "#060606";
+	C.globalCompositeOperation = "lighter";
+
+	// for each COUNT
+	for( i=0; i<laserN; i++ )
+	{
+		// make rnd size SZ btwn MINSZ and MAXSZ
+		sz = urandint()%(maxSz-minSz)+minSz;
+
+		// make rnd path PATH[2][2](int)
+		path = getRndLine();
+
+		// find weighted diff DIFF (PATH - PPATH) * WEIGHT
+		diff = arrMath( arrMath(pPath,path,'-'), w, '*' );
+
+		// make new path NEWPATH
+		// ( PATH[n]-PPATH[n]*WEIGHT )[2](int)
+		newPath = arrMath( path, diff, '-' );
+
+		// add a laser addLaser( NEWPATH )
+		addLaser( newPath, 80 );
+	}
+	C.restore();
+}
 function addComb( a, b, w )
 {
 	// get vectors a,b and wind ( V, VW ) 
@@ -390,8 +532,7 @@ function addComb( a, b, w )
 }
 function addBlob( p, size, spread, count, clip )
 {
-        var x=p[0], y=p[1], x2, y2;
-        var pos, rad = ( (spread[0]+spread[1])/2 );
+        var x=p[0], y=p[1], x2, y2, pos;
         for( i=0; i<count; i++ )
         {
                 pos = getPointInCircle(
@@ -399,7 +540,8 @@ function addBlob( p, size, spread, count, clip )
                         spread[0],
                         spread[1]
                 );
-                x2=pos[0], y2=pos[1];
+                x2=pos[0];
+		y2=pos[1];
                 if ( clip )
                 {
                         maskCircle( x2, y2, size );
@@ -421,7 +563,7 @@ function addCloud()
         var headsz = (SZ/5)*CD.headsize;
         var bodysz = CD.bodysize;
         var necksz = (SZ/6.5)/2;
-        var x2, y2, x3, y3, scale, a=[], i, j;
+        var x2, y2, scale, a=[], i, j;
 
         // LOAD
         if ( cloudBuff.length === 0 )
@@ -445,9 +587,9 @@ function addCloud()
         C.translate( 0, SZ*-3 );
 
         // SHADOWS
-        C.shadowOffsetY = SZ*3 + SZ/16.7;
-        C.shadowColor = CD.shadC;
-        C.shadowBlur = CD.shadBlur*4;
+        C.shadowOffsetY = SZ*3 + SZ/8;
+        C.shadowColor = "#00000040";
+        C.shadowBlur = CD.shadBlur*8;
         if ( !key )
         {
                 // HEAD
@@ -531,12 +673,11 @@ function addBrow( x, y, ang, blink )
 }
 function addEye( x, y, offs, stroke, bagCol )
 {
-        var sz = CD.headsize;
+        var sz = CD.headsize, y2 = y;
         var x2 = x + offs[0] * (SZ/40 - CD.pupSize);
-        var y2 = y;
 
 	// EYE BAGS
-	var bagY = y+SZ/100
+	var bagY = y+SZ/100;
         drawEllipse( x, bagY, 1, 1, CD.eyeSize*sz*1.3 );
 	var grad = C.createRadialGradient(
 		x, bagY, 0,
@@ -633,7 +774,7 @@ function addLabel()
         var txt = ["N", "i", "m", "B", "u", "d", "s"];
         var rot = [3, -3, 2, -2, 1, -1, 1];
         var w = [0, 17, 12.4, 15, 15.6, 15.2, 15.2];
-        var p, x, y, i, r=17, k=SZ/256;
+        var p, x, r=17, k=SZ/256;
         C.font = "italic " + SZ/10 + "px Arial, sans-serif";
         C.fontWeight = "900";
         C.strokeStyle = "#fff";
@@ -681,8 +822,8 @@ function addLabel()
 }
 function addBox()
 {
-        var a = "#35C1D5", stk, shad, i;
-	var v = [0,0], n = SZ/2;
+        var a = "#35C1D5", stk, shad;
+	var v = [0,0];
         C.fillStyle = "#ffffff20";
         C.fillRect( 0, 0, SZ, SZ );
         p1 = {
@@ -714,7 +855,7 @@ function addBox()
                 width: SZ/16,
                 style: a,
                 join: "miter"
-        }
+        };
         shad = {
                 offs: [ SZ/25, SZ/25 ],
                 clr:"#00000040"
@@ -749,11 +890,14 @@ function addStrand()
         var color = urandint()%CD.colors.length;
 	var hairh = SZ/CD.headsize/6;
 	var hairw = SZ/CD.headsize/3;
-        var a,b,b2,c, v, x1,x2,x3, i, xdiff;
+        var a,b,b2,c, x1,x2,x3;
 
-        x = CD.a[0], y = CD.a[1];
-	x1 = rand(), y1 = urand();
-	x2 = rand(), y2 = rand();
+        x = CD.a[0];
+	y = CD.a[1];
+	x1 = rand();
+	y1 = urand();
+	x2 = rand();
+	y2 = rand();
 	x3 = rand();
 	a = [
 		x + x1*hairw/2,
@@ -788,7 +932,7 @@ function addFreckles( x1, x2, h )
 {
         var c=urandint()%50+25;
         var sz=SZ/12, i,p1,p2;
-        var x=CD.a[0], y=CD.a[1]+sz/2;
+        var y = CD.a[1]+sz/2;
 	C.save();
         C.fillStyle = "#fa7";
         C.clip( mask, "nonzero" );
@@ -826,7 +970,7 @@ function addMouth( e1, e2 )
         var ss = 0.66, ang = getAngle( a, b, c );
         var p1, p2, p3;
 
-        addFreckles( e1[0], e2[0], offs[1] );;
+        addFreckles( e1[0], e2[0], offs[1] );
 
         // DRAW MOUTH
         if ( ang < 7 ) offs[1] = 0; // flat mouth
@@ -885,18 +1029,15 @@ function addMouth( e1, e2 )
 }
 function addFace( blink, bIdx )
 {
-        var cidx, ang, offs, e1, e2, ed, col, bagCol;
         var bl = ( nums[15]<39 );
         var ang = to1N( nums[8] ) * 36;
         var x = CD.a[0], y = CD.a[1];
-        var sz = CD.headsize*1.2
-        var bagCol = CD.darkColors[cidx];
-
-        cidx = nums[6] % CD.colors.length;
-        col = CD.colors[cidx];
-        bagCol = CD.darkColors[cidx];
-        ed = max( 6, to1(nums[7])*(SZ/17) );
-        offs = [
+        var sz = CD.headsize*1.2;
+	var cidx = nums[6] % CD.colors.length;
+	var bagCol = CD.darkColors[cidx];
+        var col = CD.colors[cidx];
+        var ed = max( 6, to1(nums[7])*(SZ/17) );
+        var offs = [
                 to1N( nums[9] ),
                 to1N( nums[10] )
         ];
@@ -906,8 +1047,8 @@ function addFace( blink, bIdx )
         C.lineCap = C.lineJoin = "round";
 
         // EYES
-        e1 = [ x-SZ/24*sz - ed*sz, y ];
-        e2 = [ x+SZ/30*sz + ed*sz, y ];
+        var e1 = [ x-SZ/24*sz - ed*sz, y ];
+        var e2 = [ x+SZ/30*sz + ed*sz, y ];
 
         // BLUSH
         if ( bl )
@@ -956,26 +1097,20 @@ function addBG( bIdx )
                 C.drawImage( imgBuff[bIdx], 0, 0 );
                 return;
         }
-        var count = nums[0]%28+4;
-        var ca = CD.colors[1], cb = "#0A6A7F";
-        var grad, i;
+        var c = CD.darkColors[urandint()%4];
         var grad = C.createRadialGradient(
                 CD.a[0], CD.a[1], 0, 
                 CD.a[0], CD.a[1], SZ
         );
-        if ( EASTER || nums[0]<64 )
-        {
-                CD.shadC = '#0A6A7F'
-        } else {
-                ca = CD.bgC, cb = CD.shadC;
-        }
-        grad.addColorStop( 0, ca );
-        grad.addColorStop( 1, cb );
+        grad.addColorStop( 0, c );
+        grad.addColorStop( 1, "black" );
         C.fillStyle = grad;
         if ( !key )
         {
                 C.fillRect( 0, 0, SZ, SZ );
         }
+	addLasers();
+	fastBlur( 8 );
         addCloud();
         saveImg( bIdx );
         imgBuff[0] = imgBuff[bIdx];
@@ -986,14 +1121,15 @@ function addBG( bIdx )
 // GOVERNANCE
 function render( blink )
 {
+	var i,j,k;
         resetSeed();
         if( BOX )
         {
-                var i=3, j=4, k=5;
+                i=3; j=4; k=5;
         } else {
-                var i=0, j=1, k=2;
+                i=0; j=1; k=2;
         }
-        if ( blink ){
+        if ( blink !== undefined ){
                 if ( !imgBuff[k] ){
                         addBG( i );
                         addFace( blink, k );
@@ -1013,7 +1149,9 @@ function render( blink )
 }
 function init()
 {
-        cloudBuff=[], imgBuff=[], nums=[];
+        cloudBuff=[];
+	imgBuff=[];
+	nums=[];
         CVS = doc.querySelector( "canvas" );
         C = CVS.getContext( "2d" );
         mask = new Path2D();
@@ -1041,6 +1179,7 @@ function init()
                         win.innerHeight
                 );
         }
+
         CVS.width = CVS.height = SZ;
         CTR = SZ/2;
         CD = {
@@ -1061,6 +1200,7 @@ function init()
                 shadC: "#c9c1a2",
                 wireShadC: "#494102"
         };
+
         lp = [ SZ/-96, SZ/4.2 ];
         newHash();
 	resetSeed();
