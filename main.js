@@ -616,7 +616,7 @@ function addLasers()
 		newPath = arrMath( path, diff, '-' );
 
 		// add a laser addLaser( NEWPATH )
-		addLaser( newPath, 80 );
+		addLaser( newPath, SZ/8 );
 	}
 	C.restore();
 }
@@ -1164,7 +1164,7 @@ function addBG( bIdx )
 		C.fillRect( 0, 0, SZ, SZ );
 	}
 	addLasers();
-	fastBlur( 8 );
+	fastBlur( SZ/32 );
 	addCloud();
 	saveImg( bIdx );
 	imgBuff[0] = imgBuff[bIdx];
