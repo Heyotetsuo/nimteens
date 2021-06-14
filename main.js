@@ -169,7 +169,15 @@ function arrMath( a, b, op )
 	var chcode = (op).charCodeAt();
 	for( i=0; i<a.length; i++ )
 	{
-		c[i] = doOp( a[i], b[i], op );
+		if ( isArray(a[i]) && !b.length ){
+			c[i] = arrMath( a[i], b, op );
+		} else if ( isArray(a[i]) && isArray(b[i]) ) {
+			c[i] = arrMath( a[i], b[i], op );
+		} else if ( !b.length ) {
+			c[i] = doOp( a[i], b, op );
+		} else {
+			c[i] = doOp( a[i], b[i], op );
+		}
 	}
 	return c;
 }
