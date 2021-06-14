@@ -772,7 +772,7 @@ function addCloud()
 	var hIdx = urandint()%hands.length;
 	var hand = hands[hIdx];
 	logf( "hIdx: %s", [hIdx] );
-	var o = [ [0,0], [SZ/-10,0], [0,0], [0,0], [SZ/10,0] ];
+	var o = [ [0,0], [SZ/-10,0], [0,0], [SZ/10,0], [SZ/10,0] ];
 	var s = 0.33;
 	renderLayer( hand, [s,s], o[hIdx] ); 
 }
