@@ -54,11 +54,18 @@ function save(n){
 	xhr.send( fd );
 }
 // if (!tokenData.hash) getHash( 64 );
-document.body.addEventListener("keypress",function(e){
-	if (e.key==='z'){
+document.body.addEventListener("keypress",function(e)
+{
+	switch( e.code )
+	{
+	case "Space":
+		main();
+		break;
+	case "KeyZ":
 		imgBuff=[];
 		EASTER=true;
 		render();
+		break;
 	}
 });
 </script>
