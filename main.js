@@ -1,7 +1,8 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,asin=Math.asin,acos=Math.acos,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max,pow=Math.pow;
 var cloudBuff,imgBuff,nums,lp,stache,key,seed,mask;
 var log=console.log,doc=document,win=window,hidden,BLINK_TO,BOX=false,shad;
-var CVS,SZ,CTR,CD,C,EASTER=false;
+var CVS,SZ,CTR,CD,C,EASTER=true;
+var GENDER=1;
 
 // HANDS
 hands = [
@@ -181,6 +182,8 @@ function d2r( deg ){ return deg*PI/180; }
 function r2d( rad ){ return rad*180/PI; }
 function getHypo(a,b){ return sqrt(abs(a*a+b*b)); }
 function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI); }
+function getPointOnCircle( sz, a ){ return [ cos(a)*sz, sin(a)*sz ]; }
+function getPointOnEllipse( xwidth, ywidth, sz, a ){ return [ cos(a)*sz*xwidth, sin(a)*sz*ywidth ]; }
 function getPointInCircle( x, y, Rx, Ry )
 {
 	var r = urand();
@@ -567,21 +570,6 @@ function renderGroup( group, s, o )
 		C.restore();
 	}
 }
-// function addLaser( line, sz )
-// {
-// 	drawLine( line[0], line[1] );
-// 	C.lineWidth = sz;
-// 	var i, j;
-// 	for( i=0; i<10; i++ )
-// 	{
-// 		C.lineWidth = sz/i+1;
-// 		for( j=0; j<10; j++ )
-// 		{
-// 			C.lineWidth -= sz/10;
-// 			C.stroke();
-// 		}
-// 	}
-// }
 function addLaser( line, sz )
 {
 	drawLine( line[0], line[1] );
@@ -802,6 +790,31 @@ function addBrow( x, y, ang, blink )
 	C.lineTo( len/-2, 0 );
 	C.lineTo( len/2, 0 );
 	C.stroke();
+	C.restore();
+}
+function addLashes( x, y )
+{
+	C.save();
+	C.lineWidth *= 0.75;
+	var sz = CD.eyeSize * CD.headsize * 1.3;
+	var nlashes = urandint()%5+3, a, b, i;
+	var step = PI/2/nlashes;
+	for (i=0; i<nlashes; i++ )
+	{
+		a = getPointOnEllipse( 1.15, 0.85, sz*0.8, step*i+PI );
+		// b = (
+		// 	getPointOnEllipse( 1.15, 0.85, sz*0.8+SZ/712, step*i+PI );
+		// );
+		c = [
+			a[0]*1.66,
+			a[1]*1.66,
+		];
+		drawLine(
+			[ a[0]+x, a[1]+y ],
+			[ c[0]+x, c[1]+y ]
+		);
+		C.stroke();
+	}
 	C.restore();
 }
 function addEye( x, y, offs, stroke, bagCol )
@@ -1088,6 +1101,8 @@ function addMouth( e1, e2 )
 			[ x, y+offs[1]/2 ],
 			"#9c6f50"
 		);
+	} else {
+		GENDER = 0;
 	}
 }
 function addFace( blink, bIdx )
@@ -1113,6 +1128,7 @@ function addFace( blink, bIdx )
 	var e1 = [ x-SZ/24*sz - ed*sz, y ];
 	var e2 = [ x+SZ/30*sz + ed*sz, y ];
 
+
 	// BLUSH
 	if ( bl )
 	{
@@ -1136,6 +1152,10 @@ function addFace( blink, bIdx )
 		addEye( e2[0], e2[1], offs, col, bagCol );
 		addBrow( e1[0], e1[1], ang );
 		addBrow( e2[0], e2[1], ang*-1 );
+
+		// LASHES
+		addLashes( e1[0], e1[1] );
+
 	} else {
 		addBrow( e1[0], e1[1], 0, blink );
 		addBrow( e2[0], e2[1], 0, blink );
