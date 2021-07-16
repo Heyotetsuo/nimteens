@@ -453,9 +453,11 @@ function getRndLine()
 {
 	var a = [ urandint()%SZ, urandint()%SZ ];
 	var b = [ urandint()%SZ, urandint()%SZ ];
+	var n = SZ/128;
+	var lo=n*-1, hi=SZ+n;
 	
-	if ( a[0]<a[1] ) a[0]=0; else a[1]=0;
-	if ( b[0]>b[1] ) b[0]=SZ; else b[1]=SZ;
+	if ( a[0]<a[1] ) a[0]=lo; else a[1]=lo;
+	if ( b[0]>b[1] ) b[0]=hi; else b[1]=hi;
 
 	return [a,b];
 }
@@ -565,13 +567,31 @@ function renderGroup( group, s, o )
 		C.restore();
 	}
 }
+// function addLaser( line, sz )
+// {
+// 	drawLine( line[0], line[1] );
+// 	C.lineWidth = sz;
+// 	var i, j;
+// 	for( i=0; i<10; i++ )
+// 	{
+// 		C.lineWidth = sz/i+1;
+// 		for( j=0; j<10; j++ )
+// 		{
+// 			C.lineWidth -= sz/10;
+// 			C.stroke();
+// 		}
+// 	}
+// }
 function addLaser( line, sz )
 {
 	drawLine( line[0], line[1] );
 	C.lineWidth = sz;
-	for( var i=0; i<10; i++ )
+	var inc, i;
+
+	for( i=0; i<20; i++ )
 	{
-		C.lineWidth -= sz/10;
+		inc = (i+1);
+		C.lineWidth = sz/inc;
 		C.stroke();
 	}
 }
@@ -601,7 +621,7 @@ function addLasers()
 		diff = arrMath( arrMath(paths[0],paths[i],'-'), laserWeight, '*' );
 		newPath = arrMath( paths[i], diff, '-' );
 
-		addLaser( newPath, SZ/8 );
+		addLaser( newPath, SZ/5 );
 	}
 	C.restore();
 }
@@ -1153,7 +1173,7 @@ function addBG( bIdx )
 		C.fillRect( 0, 0, SZ, SZ );
 	}
 	addLasers();
-	fastBlur( SZ/32 );
+	fastBlur( urandint()%SZ/32 );
 	addCloud();
 	saveImg( bIdx );
 	imgBuff[0] = imgBuff[bIdx];
