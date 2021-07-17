@@ -1,7 +1,7 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,asin=Math.asin,acos=Math.acos,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max,pow=Math.pow;
 var cloudBuff,imgBuff,nums,lp,stache,key,seed,mask;
 var log=console.log,doc=document,win=window,hidden,BLINK_TO,BOX=false,shad;
-var CVS,SZ,CTR,CD,C,EASTER=true;
+var CVS,SZ,CTR,CD,C,EASTER=false;
 var GENDER=1;
 
 // HANDS
@@ -473,25 +473,28 @@ function addShape( shape, s, o, fill, stroke, shad )
 // OPTIONAL: fill: color, stroke: color, shad: color
 {
 	C.save();
-	var ax, ay, bx, by, cx, cy, i, j;
+	var ax, ay, bx, by, cx, cy, i, j, p;
 	var vs = shape.verts;
 	var is = shape.ins || null;
 	var os = shape.outs || null;
 	var x = o ? o[0] : SZ/2;
 	var y = o ? o[1] : SZ/2;
 	var l = vs.length;
+	var blank = "#00000000";
 	var style = "";
 	var styles = {
 		shadowOffsetX: SZ/256,
 		shadowOffsetY: SZ/256,
-		shadowColor: "#00000000",
+		shadowColor: blank,
 		shadowBlur: 0,
-		fillStyle: "#00000000",
+		fillStyle: fill || blank,
 		lineWidth: SZ/256,
-		strokeStyle: "#00000000",
+		strokeStyle: blank,
 		lineJoin: "round",
 		lineCap: "round"
 	}
+	if ( stroke ){ style = mergeStyle( style, stroke ); }
+	if ( shad ){ style = mergeStyle( style, shad ); }
 	C.moveTo(
 		x + vs[0][0]*s[0],
 		y + vs[0][1]*s[1]
@@ -913,8 +916,7 @@ function addLabel()
 }
 function addBox()
 {
-	var a = "#35C1D5", stk, shad;
-	var v = [0,0];
+	var stk, shad, v = [0,0];
 	C.fillStyle = "#ffffff20";
 	C.fillRect( 0, 0, SZ, SZ );
 	p1 = {
@@ -932,7 +934,12 @@ function addBox()
 			v, v, v,
 			v, v, v,
 			v, v, v
-		]
+		],
+		lineWidth: SZ/16,
+		strokeStyle: "#35C1D5",
+		join: "miter",
+		offs: [ SZ/25, SZ/25 ],
+		clr: "#00000040"
 	};
 	p2 = {
 		verts: [
@@ -940,26 +947,21 @@ function addBox()
 			[SZ/2,0], v
 		],
 		ins: [ v,v,[0,SZ/80],v ],
-		outs: [ v,v,v,v ]
-	};
-	stk = {
+		outs: [ v,v,v,v ],
+		fillStyle: "#35C1D5",
 		lineWidth: SZ/16,
-		strokeStyle: a,
+		strokeStyle: "#35C1D5",
 		join: "miter"
 	};
-	shad = {
-		offs: [ SZ/25, SZ/25 ],
-		clr:"#00000040"
-	};
-	addShape( p1, [1,1], [0,0], null, stk, shad );
-	addShape( p2, [1,1], [0,0], a, stk );
+	addShape( p1, [1,1], [0,0] );
+	addShape( p2, [1,1], [0,0] );
 }
 function drawHair( a, b, c, clr )
 {
 	drawCurve(a,b,c);
 	C.save();
 	C.shadowColor = "#00000000";
-	C.fillStyle = "rgba(0,0,0,0)";
+	C.fillStyle = "#00000000";
 	C.strokeStyle = "black";
 	C.lineWidth = CD.lineWidth;
 	C.stroke();
@@ -1120,20 +1122,19 @@ function addMouth( e1, e2 )
 				[-13, -17], 
 				[-13, 5], 
 				[-16, 4]
-			]
+			],
+			fillStyle: "#9c6f50"
 		};
 		scaleShape( stache, SZ/800*CD.headsize );
 		addShape(
 			stache,
 			[ ss, ss ],
-			[ x, y+offs[1]/2 ],
-			"#9c6f50"
+			[ x, y+offs[1]/2 ]
 		);
 		addShape(
 			stache,
 			[ ss*-1, ss ],
-			[ x, y+offs[1]/2 ],
-			"#9c6f50"
+			[ x, y+offs[1]/2 ]
 		);
 	} else {
 		GENDER = 0;
