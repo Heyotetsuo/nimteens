@@ -742,6 +742,7 @@ function addCloud()
 	maskCircle( x, y, headsz*0.8 );
 
 
+
 	// NECK AND BODY
 	addBlob(
 		[ x, y + SZ/5 ],necksz,
@@ -760,6 +761,9 @@ function addCloud()
 	);
 	fillMask( "white" );
 	C.restore();
+
+	// FG HAIR
+	addHair( urandint()%40+20 );
 
 	// HANDS
 	var hIdx = urandint()%hands.length;
@@ -1191,8 +1195,6 @@ function addFace( blink, bIdx )
 		addBrow( e2[0], e2[1], 0, blink );
 	}
 
-	// FG HAIR
-	addHair( urandint()%40+20 );
 
 	C.miterLimit = 0;
 	C.restore();
