@@ -792,14 +792,17 @@ function addBrow( x, y, ang, blink )
 	C.stroke();
 	C.restore();
 }
-function addLashes( e1, e2, n )
+function addLashes( e1, e2 )
 {
 	C.save();
 	C.lineWidth *= 0.66;
 	var sz = CD.eyeSize * CD.headsize * 1.3;
-	var step = PI/2/n, a, b, i, x, y;
-	for (i=0; i<n; i++ )
+	var nlashes = urandint()%5+3;
+	var step = PI/2/nlashes;
+	var a, b, i, x, y;
+	for (i=0; i<nlashes; i++ )
 	{
+		// left lashes
 		x = e1[0], y = e1[1];
 		a = getPointOnEllipse( 1.15, 0.85, sz*0.8, step*i+PI );
 		b = getPointOnEllipse( 1.15, 0.85, sz*0.9, step*i+PI-step/2 );
@@ -809,8 +812,9 @@ function addLashes( e1, e2, n )
 			[ b[0]+x, b[1]+y ],
 			[ c[0]+x, c[1]+y ]
 		);
-		C.stroke();
 
+		// right lashes
+		C.stroke();
 		x = e2[0], y = e2[1];
 		a = getPointOnEllipse( 1.15, 0.85, sz*0.8, step*i*-1 );
 		b = getPointOnEllipse( 1.15, 0.85, sz*0.9, step*i*-1+step/2 );
@@ -1011,20 +1015,38 @@ function addHair( c )
 		addStrand( i );
 	}
 }
+function addPimples()
+{
+	var c=urandint()%20;
+	var sz=(SZ/5)*CD.headsize;
+	var y = CD.a[1]+sz/2;
+	var zitSz, i, p;
+	var zitColor = "#f77";
+	C.save();
+	C.clip( mask, "nonzero" );
+	for( i=0; i<c; i++ )
+	{
+		zitSz = SZ/150*urand();
+		p = getPointInCircle( CD.a[0], CD.a[1]+SZ/128, sz, sz/2 );
+		C.fillStyle = zitColor;
+		fillCircle( p[0], p[1], zitSz );
+		C.fillStyle = "#fff";
+		fillCircle( p[0]+SZ/1000, p[1]-SZ/1000, zitSz/2 );
+	}
+	C.restore();
+}
 function addFreckles( x1, x2, h )
 {
 	var c=urandint()%50+25;
-	var sz=SZ/12, i,p1,p2;
+	var sz=SZ/12, i, p;
 	var y = CD.a[1]+sz/2;
 	C.save();
 	C.fillStyle = "#fa7";
 	C.clip( mask, "nonzero" );
 	for( i=0; i<c; i++ )
 	{
-		p1 = getPointInCircle( x1, y, sz, sz/2 );
-		p2 = getPointInCircle( x2, y, sz, sz/2 );
-		fillCircle( p1[0], p1[1], SZ/400*urand() );
-		fillCircle( p2[0], p2[1], SZ/400*urand() );
+		p = getPointInCircle( x1, y, sz, sz/2 );
+		fillCircle( p[0], p[1], SZ/400*urand() );
 	}
 	C.restore();
 }
@@ -1054,6 +1076,7 @@ function addMouth( e1, e2 )
 	var p1, p2, p3;
 
 	addFreckles( e1[0], e2[0], offs[1] );
+	addPimples();
 
 	// DRAW MOUTH
 	if ( ang < 7 ) offs[1] = 0; // flat mouth
@@ -1161,8 +1184,7 @@ function addFace( blink, bIdx )
 		addBrow( e2[0], e2[1], ang*-1 );
 
 		// LASHES
-		var nlashes = urandint()%5+3;
-		addLashes( e1, e2, nlashes );
+		addLashes( e1, e2 );
 
 	} else {
 		addBrow( e1[0], e1[1], 0, blink );
