@@ -792,25 +792,32 @@ function addBrow( x, y, ang, blink )
 	C.stroke();
 	C.restore();
 }
-function addLashes( x, y )
+function addLashes( e1, e2, n )
 {
 	C.save();
-	C.lineWidth *= 0.75;
+	C.lineWidth *= 0.66;
 	var sz = CD.eyeSize * CD.headsize * 1.3;
-	var nlashes = urandint()%5+3, a, b, i;
-	var step = PI/2/nlashes;
-	for (i=0; i<nlashes; i++ )
+	var step = PI/2/n, a, b, i, x, y;
+	for (i=0; i<n; i++ )
 	{
+		x = e1[0], y = e1[1];
 		a = getPointOnEllipse( 1.15, 0.85, sz*0.8, step*i+PI );
-		// b = (
-		// 	getPointOnEllipse( 1.15, 0.85, sz*0.8+SZ/712, step*i+PI );
-		// );
-		c = [
-			a[0]*1.66,
-			a[1]*1.66,
-		];
-		drawLine(
+		b = getPointOnEllipse( 1.15, 0.85, sz*0.9, step*i+PI-step/2 );
+		c = [ a[0]*1.66, a[1]*1.66, ];
+		drawCurve(
 			[ a[0]+x, a[1]+y ],
+			[ b[0]+x, b[1]+y ],
+			[ c[0]+x, c[1]+y ]
+		);
+		C.stroke();
+
+		x = e2[0], y = e2[1];
+		a = getPointOnEllipse( 1.15, 0.85, sz*0.8, step*i*-1 );
+		b = getPointOnEllipse( 1.15, 0.85, sz*0.9, step*i*-1+step/2 );
+		c = [ a[0]*1.66, a[1]*1.66, ];
+		drawCurve(
+			[ a[0]+x, a[1]+y ],
+			[ b[0]+x, b[1]+y ],
 			[ c[0]+x, c[1]+y ]
 		);
 		C.stroke();
@@ -1154,7 +1161,8 @@ function addFace( blink, bIdx )
 		addBrow( e2[0], e2[1], ang*-1 );
 
 		// LASHES
-		addLashes( e1[0], e1[1] );
+		var nlashes = urandint()%5+3;
+		addLashes( e1, e2, nlashes );
 
 	} else {
 		addBrow( e1[0], e1[1], 0, blink );
