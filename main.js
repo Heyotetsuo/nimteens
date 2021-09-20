@@ -2,7 +2,7 @@ var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,asin=Math.asin
 var cloudBuff,imgBuff,nums,lp,stache,key,seed,mask;
 var log=console.log,doc=document,win=window,hidden,BLINK_TO,BOX=false,shad;
 var CVS,SZ,CTR,CD,C,EASTER=false;
-var GENDER=1;
+var GENDER=1,EMO=false,BALD=false;
 
 // HANDS
 hands = [
@@ -10,10 +10,7 @@ hands = [
 ];
 
 // RANDOMNESS
-function urandint(n)
-{
-	return abs( randint(n) );
-}
+function urandint(n){ return abs( randint(n) ); }
 function randint(n)
 {
 	if (n) seed = n;
@@ -210,14 +207,7 @@ function saveImg( i )
 		hidden.appendChild( img );
 	}
 }
-function setDebug( n )
-{
-	if ( n )
-	{
-		// for testing
-		tokenData.hash = n;
-	}
-}
+function setDebug( n ){ if ( n ) tokenData.hash = n; }
 
 
 
@@ -725,13 +715,19 @@ function addCloud()
 		);
 	}
 
+
 	// CACHE
 	resetSeed();
 	C.restore();
 	C.save();
 
 	// BG HAIR
-	addHair( urandint()%200+200 );
+        if ( EMO )
+        {
+                addHair( nums[19]%40+20 );
+        } else {
+                addHair( nums[19]%200+200 );
+        }
 
 	// HEAD
 	mask = new Path2D();
@@ -766,19 +762,25 @@ function addCloud()
 	C.restore();
 
 	// FG HAIR
-	addHair( urandint()%40+20 );
+        if ( !EMO )
+        {
+                addHair( nums[19]%200+200 );
+        }
 
 	// HANDS
-	var hIdx = urandint()%hands.length;
-	var hand = hands[hIdx];
-	var o = [
-		[
-			SZ/6 + rand() * SZ/16,
-			SZ/3
-		]
-	];
-	var s = 1;
-	renderGroup( hand, [s,s], o[hIdx] ); 
+        if ( rand() > 0.5 )
+        {
+                var hIdx = urandint()%hands.length;
+                var hand = hands[hIdx];
+                var o = [
+                        [
+                                SZ/6 + rand() * SZ/16,
+                                SZ/3
+                        ]
+                ];
+                var s = 1;
+                renderGroup( hand, [s,s], o[hIdx] ); 
+        }
 }
 function addBrow( x, y, ang, blink )
 {
@@ -849,14 +851,16 @@ function addEye( x, y, offs, stroke, bagCol )
 	);
 	grad.addColorStop( 0.5, bagCol );
 	grad.addColorStop( 1, bagCol+"00" );
+        C.globalCompositeOperation = "multiply";
 	C.fillStyle = grad;
 	C.fill();
+        C.globalCompositeOperation = "source-over";
 
 	C.shadowColor = "#00000000";
 	C.strokeStyle = stroke;
 	C.fillStyle = "white";
 	drawEllipse( x, y, 1.15, 0.85, CD.eyeSize*sz );
-	C.fill();
+        C.fill();
 	C.stroke();
 	drawCircle( x2, y2, CD.pupSize*sz );
 	C.stroke();
@@ -956,7 +960,7 @@ function addBox()
 	addShape( p1, [1,1], [0,0] );
 	addShape( p2, [1,1], [0,0] );
 }
-function drawHair( a, b, c, clr )
+function drawStrand( a, b, c, clr )
 {
 	drawCurve(a,b,c);
 	C.save();
@@ -967,63 +971,87 @@ function drawHair( a, b, c, clr )
 	C.stroke();
 	C.restore();
 }
-function colorHair( a, b, c, clr )
+function colorStrand( a, b, c, color )
 {
 	drawCurve(a,b,c);
 	C.save();
 	C.lineWidth = 1;
-	C.strokeStyle = CD.colors[clr];
-	C.shadowColor = CD.colors[clr];
+	C.strokeStyle = color;
+	C.shadowColor = color;
 	C.shadowBlur = SZ/180;
 	for(var i=0; i<SZ/40; i++) C.stroke();
 	C.restore();
 }
+function chooseAtRandom( arr )
+{
+        return arr[urandint()%arr.length];
+}
 function addStrand()
 {
-	var color = urandint()%CD.colors.length;
+        var color = chooseAtRandom( CD.colors );
 	var hairh = SZ/CD.headsize/6;
 	var hairw = SZ/CD.headsize/3;
 	var a,b,b2,c, x1,x2,x3;
 
 	x = CD.a[0];
-	y = CD.a[1];
+	y = ( EMO ? CD.a[1]+SZ/20 : CD.a[1] );
 	x1 = rand();
 	y1 = urand();
 	x2 = rand();
 	y2 = rand();
 	x3 = rand();
-	a = [
-		x + x1*hairw/2,
-		y - y1*hairh-hairh
-	];
-	b = [
-		a[0] + x2*hairw/2,
-		a[1] + y2*hairh/2
-	];
-	c = [
-		b[0] + x3*hairw/4,
-		b[1] + y1*hairh/4
-	];
+        a = [
+                x + x1*hairw/2,
+                y - y1*hairh-hairh
+        ];
+        if ( EMO )
+        {
+                b = [
+                        a[0] + x2*hairw/2,
+                        a[1] + y2*hairh
+                ];
+                c = [
+                        b[0] + x3*hairw/4,
+                        b[1] + y1*hairh*2
+                ];
+                CD.windWeight *= -1;
+        } else {
+                b = [
+                        a[0] + x2*hairw/2,
+                        a[1] + y2*hairh/2
+                ];
+                c = [
+                        b[0] + x3*hairw/4,
+                        b[1] + y1*hairh/4
+                ];
+        }
 
-	// WIND
-	b2 = addComb( a, b, CD.windWeight );
-	c = arrMath( c, arrMath(b,b2,'-'), '+' );
-	b = b2;
-	c = addComb( b, c, CD.windWeight/2 );
+        // WIND
+        b2 = addComb( a, b, CD.windWeight );
+        c = arrMath( c, arrMath(b,b2,'-'), '+' );
+        b = b2;
+        c = addComb( b, c, CD.windWeight/2 );
 
-	drawHair( a, b, c );
-	colorHair( a, b, c, color );
+	drawStrand( a, b, c );
+	colorStrand( a, b, c, color );
 }
 function addHair( c )
 {
+        resetSeed();
 	for( var i=0; i<c; i++ )
 	{
 		addStrand( i );
 	}
 }
+function getExpoCount( min, max )
+{
+        var div = max - min;
+	var c = urandint()%div+min;
+        return abs( c*c ) / div;
+}
 function addPimples()
 {
-	var c=urandint()%20;
+        var c = getExpoCount( 0, 20 );
 	var sz=(SZ/5)*CD.headsize;
 	var y = CD.a[1]+sz/2;
 	var zitSz, i, p;
@@ -1043,7 +1071,7 @@ function addPimples()
 }
 function addFreckles( x1, x2, h )
 {
-	var c=urandint()%50+25;
+        var c = getExpoCount( 0, 75 );
 	var sz=SZ/12, i, p;
 	var y = CD.a[1]+sz/2;
 	C.save();
@@ -1068,27 +1096,57 @@ function addBlush(p,s)
 	C.fillRect( x-s, y-s, x+s, y+s );
 	C.restore();
 }
-function addMouth( e1, e2 )
+function drawStacheHair( x, y, w, h )
+{
+        var len = SZ/64;
+        var d = x-CD.a[0];
+        var a = [ x, y ];
+        var b = [ x+d/10, y+urand()*len  ];
+        drawLine( a, b );
+        C.stroke();
+}
+function addStache( a, b, ang )
+{
+        C.save();
+        var w = max( SZ/22, abs(a) );
+        var count = urandint()%(w*2)+20;
+        var h = SZ/64;
+        var offsX, x, y, i;
+        // C.strokeStyle = "#a07040";
+        C.lineWidth = SZ/512;
+        for( i=0; i<count; i++ )
+        {
+                C.strokeStyle = chooseAtRandom( CD.colors );
+                offsX = rand()*w;
+                x = CD.a[0] + offsX;
+                y = CD.a[1] + urand()*h + SZ/16 + abs(offsX)*b/100;
+                drawStacheHair( x, y, w, h );
+        }
+        C.restore();
+}
+function addMouth( offs )
 {
 	var x = CD.a[0];
 	var y = CD.a[1] + SZ/10;
-	var offs = [
-		to1( nums[4] )*( SZ/8 ),
-		to1N( nums[5] )*( SZ/40 )
-	];
 	var a = offs[0], b = offs[1];
 	var c = getHypo( a, b );
 	var ss = 0.66, ang = getAngle( a, b, c );
 	var p1, p2, p3;
 
-	addFreckles( e1[0], e2[0], offs[1] );
-	addPimples();
+	// STACHE
+	if (
+                GENDER === 0 ||
+                EASTER ||
+                ( nums[12]<39 && GENDER === 0 )
+        ) {
+                addStache( a, b, ang );
+	}
 
 	// DRAW MOUTH
 	if ( ang < 7 ) offs[1] = 0; // flat mouth
-	p1 = [ x-offs[0], y+offs[1] ];
+	p1 = [ x-a, y+b ];
 	p2 = [ x, y ];
-	p3 = [ x+offs[0], y+offs[1] ];
+	p3 = [ x+a, y+b ];
 
 	// PAINT MOUTH
 	C.moveTo( p1[0], p1[1] );
@@ -1098,47 +1156,6 @@ function addMouth( e1, e2 )
 	C.lineTo( p3[0], p3[1] );
 	C.stroke();
 
-	// STACHE
-	if ( EASTER || nums[12]<39 )
-	{
-		stache = {
-			verts:[
-				[-93, -38], 
-				[-52, 6], 
-				[0, -33], 
-				[-41, -46], 
-				[-68, -28]
-			], 
-			ins: [
-				[9, -6], 
-				[-29, -4], 
-				[9, 13], 
-				[13, -5], 
-				[9, -2]
-			], 
-			outs: [
-				[-10, 0], 
-				[58, 8], 
-				[-13, -17], 
-				[-13, 5], 
-				[-16, 4]
-			],
-			fillStyle: "#9c6f50"
-		};
-		scaleShape( stache, SZ/800*CD.headsize );
-		addShape(
-			stache,
-			[ ss, ss ],
-			[ x, y+offs[1]/2 ]
-		);
-		addShape(
-			stache,
-			[ ss*-1, ss ],
-			[ x, y+offs[1]/2 ]
-		);
-	} else {
-		GENDER = 0;
-	}
 }
 function addFace( blink, bIdx )
 {
@@ -1150,7 +1167,7 @@ function addFace( blink, bIdx )
 	var bagCol = CD.darkColors[cidx];
 	var col = CD.colors[cidx];
 	var ed = max( 6, to1(nums[7])*(SZ/17) );
-	var offs = [
+	var offs1 = [
 		to1N( nums[9] ),
 		to1N( nums[10] )
 	];
@@ -1162,7 +1179,6 @@ function addFace( blink, bIdx )
 	// EYES
 	var e1 = [ x-SZ/24*sz - ed*sz, y ];
 	var e2 = [ x+SZ/30*sz + ed*sz, y ];
-
 
 	// BLUSH
 	if ( bl )
@@ -1177,25 +1193,42 @@ function addFace( blink, bIdx )
 		], SZ/6 );
 	}
 
+        // SKIN
+	var offs2 = [
+		to1( nums[4] )*( SZ/8 ),
+		to1N( nums[5] )*( SZ/40 )
+	];
+	addFreckles( e1[0], e1[1], offs2[1] );
+	addFreckles( e2[0], e2[1], offs2[1] );
+        if ( rand() > 0.5 ){ addPimples(); }
+
+
 	// MOUTH
-	addMouth( e1, e2 );
+	addMouth( offs2 );
 
 	// EYES
 	if( !blink )
 	{
-		addEye( e1[0], e1[1], offs, col, bagCol );
-		addEye( e2[0], e2[1], offs, col, bagCol );
+		addEye( e1[0], e1[1], offs1, col, bagCol );
+		addEye( e2[0], e2[1], offs1, col, bagCol );
 		addBrow( e1[0], e1[1], ang );
 		addBrow( e2[0], e2[1], ang*-1 );
 
 		// LASHES
-		addLashes( e1, e2 );
+                if ( GENDER === 1 )
+                {
+                        addLashes( e1, e2 );
+                }
 
 	} else {
 		addBrow( e1[0], e1[1], 0, blink );
 		addBrow( e2[0], e2[1], 0, blink );
 	}
 
+        if ( EMO )
+        {
+                addHair( nums[19]%200+200 );
+        }
 
 	C.miterLimit = 0;
 	C.restore();
@@ -1280,6 +1313,7 @@ function init()
 	CTR = SZ/2;
 	CD = {
 		lineWidth: SZ/80,
+                hairLen: urand(),
 		headsize: 1.2, bodysize: SZ/8,
 		eyeSize: SZ/28, pupSize: SZ/200,
 		a: [ CTR, CTR - SZ/8 ],
@@ -1304,6 +1338,8 @@ function init()
 	CD.wind = [ rand(), urand()/-2-1/2 ];
 	CD.windWeight = urandint()%1+2;
 	CD.force = rand()*3;
+        EMO = urand() > 0.9;
+        GENDER = ( urand()>0.66 ? 1 : 0 );
 }
 function render( blink )
 {
