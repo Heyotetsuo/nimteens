@@ -571,6 +571,20 @@ function renderGroup( group, s, o )
                 C.restore();
         }
 }
+function addVignette( amount )
+{
+        C.save();
+        var grad = C.createRadialGradient( CTR, CTR, 0, CTR, CTR, SZ );
+        grad.addColorStop( 0, "#00000000" );
+        grad.addColorStop( 0.3, "#00000020" );
+        grad.addColorStop( 0.67, "#00000080" );
+        grad.addColorStop( 1, "#000000ff" );
+        C.globalCompositeOperation = "sourceOver";
+        C.globalAlpha = amount*255 | 0;
+        C.fillStyle = grad;
+        C.fillRect( 0, 0, SZ, SZ );
+        C.restore();
+}
 function addLaser( line, sz )
 {
         drawLine( line[0], line[1] );
@@ -1412,9 +1426,9 @@ function addBG( bIdx )
                 C.drawImage( imgBuff[bIdx], 0, 0 );
                 return;
         }
+        var scene = urandint()%3;
         C.save();
-        addCurtainBG();
-        switch( false && urandint()%3 )
+        switch( false && scene )
         {
                 case 0:
                         addLaserBG();
@@ -1433,6 +1447,7 @@ function addBG( bIdx )
         }
         C.restore();
         addCloud();
+        if ( scene !== 2 ) addVignette(0.5);
         saveImg( bIdx );
         imgBuff[0] = imgBuff[bIdx];
 }
