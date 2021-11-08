@@ -1428,7 +1428,7 @@ function addBG( bIdx )
         }
         var scene = urandint()%3;
         C.save();
-        switch( false && scene )
+        switch( scene )
         {
                 case 0:
                         addLaserBG();
