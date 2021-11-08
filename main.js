@@ -1426,7 +1426,7 @@ function addBG( bIdx )
                 C.drawImage( imgBuff[bIdx], 0, 0 );
                 return;
         }
-        var scene = urandint()%3;
+        var scene = urandint()%4;
         C.save();
         switch( scene )
         {
