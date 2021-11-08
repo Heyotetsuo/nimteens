@@ -1410,7 +1410,6 @@ function addBG( bIdx )
                 return;
         }
         C.save();
-        addCurtainBG();
         switch( false && urandint()%3 )
         {
                 case 0:
