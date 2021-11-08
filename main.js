@@ -141,6 +141,11 @@ function copyArray( a )
         }
         return b;
 }
+function getsz( n )
+{
+        var dvdnd = 800 / n;
+        return SZ / dvdnd | 0;
+}
 
 
 
@@ -401,8 +406,6 @@ function fastBlur( amount )
         }
         C.putImageData( d, 0, 0 );
 }
-
-
 
 // BASIC SHAPES
 function fillCircle( x, y, r )
@@ -685,7 +688,7 @@ function addGrain( amount, op )
 function addCurtains( rgb )
 {
         var noise = randomNoise( rgb );
-        var sz=32, grad, x,y;
+        var sz=getsz(32), grad, x,y;
 
         C.globalCompositeOperation = "source-over";
         C.drawImage( noise, 0, 0, sz, 1, 0, 0, SZ, SZ );
@@ -698,7 +701,7 @@ function addCurtains( rgb )
         C.fillStyle = grad;
         C.fillRect( 0, 0, SZ, SZ );
 
-        fastBlur( 16 );
+        fastBlur( getsz(16) );
 
         // add texture
         addGrain( 0.03, '-' );
@@ -1410,6 +1413,7 @@ function addBG( bIdx )
                 return;
         }
         C.save();
+        addCurtainBG();
         switch( false && urandint()%3 )
         {
                 case 0:
