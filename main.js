@@ -141,7 +141,7 @@ function copyArray( a )
         }
         return b;
 }
-function getsz( n )
+function z( n )
 {
         var dvdnd = 800 / n;
         return SZ / dvdnd | 0;
@@ -187,8 +187,8 @@ function arrMath( a, b, op )
 }
 function d2r( deg ){ return deg*PI/180; }
 function r2d( rad ){ return rad*180/PI; }
-function getHypo(a,b){ return sqrt(abs(a*a+b*b)); }
-function getAngle(a,b,c){ return Math.acos(abs(a/c))*(180/PI); }
+function getHypo(x,y){ return sqrt(abs(x*x+y*y)); }
+function getAngle(x,y,h){ return Math.acos(abs(x/h))*(180/PI); }
 function getPointOnCircle( sz, a ){ return [ cos(a)*sz, sin(a)*sz ]; }
 function getPointOnEllipse( xwidth, ywidth, sz, a ){ return [ cos(a)*sz*xwidth, sin(a)*sz*ywidth ]; }
 function getPointInCircle( x, y, Rx, Ry )
@@ -462,10 +462,51 @@ function getRndLine()
 
         return [a,b];
 }
+function getRndPoint( r ){ return [ rand()*r, rand()*r ]; }
+function getRndPoly( n, r )
+{
+        var p=[], i;
+        for( i=0; i<n; i++ )
+        {
+                p.push( getRndPoint(r) );
+        }
+        return p;
+}
 
 
 
 // COMPLEX SHAPES
+function addSquiggle( a, b, n, color )
+{
+        C.beginPath();
+        C.moveTo( a[0], a[1] );
+        var sz, step, ang, h, c, i;
+
+        step = arrMath( b, a, '-' );
+        step = arrMath( step, n, '/' );
+
+        h = getHypo( step[0], step[1] );
+        ang = getAngle( step[0], step[1], h ) + 90;
+
+        sz = z( getVecLen(step) );
+
+        for( i=0; i<n; i++ )
+        {
+                if ( a[1] <= b[1] ) ang += i % 2 * 360 - 180;
+                if ( a[1] > b[1] ) ang -= i % 2 * 360 - 180;
+                c = arrMath( step, i, '*' );
+                c = arrMath( a, c, '+' );
+                c = arrMath( c, getPointOnCircle(sz,ang), '+' );
+                C.lineTo( c[0], c[1] );
+        }
+        C.save();
+        C.strokeStyle = color;
+        C.lineWidth = sz*1.5;
+        C.lineCap = "round";
+        C.lineJoin = "round";
+        C.stroke();
+        C.restore();
+}
 function addShape( shape, s, o, fill, stroke, shad )
 // REQUIRED: shape: 2dmatrix, s: scale [x,y], o: offset [x,y]
 // OPTIONAL: fill: color, stroke: color, shad: color
@@ -475,18 +516,18 @@ function addShape( shape, s, o, fill, stroke, shad )
         var vs = shape.verts;
         var is = shape.ins || null;
         var os = shape.outs || null;
-        var x = o ? o[0] : SZ/2;
-        var y = o ? o[1] : SZ/2;
+        var x = o ? o[0] : z(400);
+        var y = o ? o[1] : z(400);
         var l = vs.length;
         var blank = "#00000000";
         var style = "";
         var styles = {
-                shadowOffsetX: SZ/256,
-                shadowOffsetY: SZ/256,
+                shadowOffsetX: z(3),
+                shadowOffsetY: z(3),
                 shadowColor: blank,
                 shadowBlur: 0,
                 fillStyle: fill || blank,
-                lineWidth: SZ/256,
+                lineWidth: z(3),
                 strokeStyle: blank,
                 lineJoin: "round",
                 lineCap: "round"
@@ -627,7 +668,7 @@ function addLasers()
                 diff = arrMath( arrMath(paths[0],paths[i],'-'), laserWeight, '*' );
                 newPath = arrMath( paths[i], diff, '-' );
 
-                addLaser( newPath, SZ/5 );
+                addLaser( newPath, z(160) );
         }
         C.restore();
         return maxSz;
@@ -702,7 +743,7 @@ function addGrain( amount, op )
 function addCurtains( rgb )
 {
         var noise = randomNoise( rgb );
-        var sz=getsz(32), grad, x,y;
+        var sz=z(32), grad, x,y;
 
         C.globalCompositeOperation = "source-over";
         C.drawImage( noise, 0, 0, sz, 1, 0, 0, SZ, SZ );
@@ -715,7 +756,7 @@ function addCurtains( rgb )
         C.fillStyle = grad;
         C.fillRect( 0, 0, SZ, SZ );
 
-        fastBlur( getsz(16) );
+        fastBlur( z(16) );
 
         // add texture
         addGrain( 0.03, '-' );
@@ -782,9 +823,9 @@ function addCloud()
 {
         var x = CD.a[0], y = CD.a[1];
         var count = nums[0]%7 + 6;
-        var headsz = (SZ/5)*CD.headsize;
+        var headsz = z(160)*CD.headsize;
         var bodysz = CD.bodysize;
-        var necksz = (SZ/6.5)/2;
+        var necksz = z(123)/2;
         var x2, y2, scale, a=[], i, j;
 
         // LOAD
@@ -809,7 +850,7 @@ function addCloud()
         C.translate( 0, SZ*-3 );
 
         // SHADOWS
-        C.shadowOffsetY = SZ*3 + SZ/8;
+        C.shadowOffsetY = z(800*3) + z(100);
         C.shadowColor = "#00000040";
         C.shadowBlur = CD.shadBlur*8;
         if ( !key )
@@ -826,12 +867,12 @@ function addCloud()
 
                 // NECK AND BODY
                 addBlob(
-                        [ x, y + SZ/5 ], necksz,
-                        [SZ/16, SZ/10], count*2
+                        [ x, y + z(188) ], necksz,
+                        [z(60), z(80)], count*2
                 );
                 addBlob(
-                        [ x, y + SZ/2 ], bodysz,
-                        [SZ/3-bodysz, SZ/5], count*8
+                        [ x, y + z(400) ], bodysz,
+                        [ z(266)-bodysz, z(160) ], count*8
                 );
         }
 
@@ -867,18 +908,18 @@ function addCloud()
 
         // NECK AND BODY
         addBlob(
-                [ x, y + SZ/5 ],necksz,
-                [SZ/16, SZ/10], count*2,
+                [ x, y + z(160)],necksz,
+                [z(50), z(80)], count*2,
                 true
         );
         addBlob(
-                [ x, y + SZ/2 ], bodysz,
-                [SZ/3-bodysz, SZ/5], count*8,
+                [ x, y + z(400) ], bodysz,
+                [z(266)-bodysz, z(160)], count*8,
                 true
         );
         addBlob(
-                [ x, SZ ], bodysz*1.2,
-                [SZ/3-bodysz, SZ/5], count*8,
+                [ x, z(800) ], bodysz*1.2,
+                [z(266)-bodysz, z(160)], count*8,
                 true
         );
         fillMask( "white" );
@@ -897,8 +938,8 @@ function addCloud()
                 var hand = hands[hIdx];
                 var o = [
                         [
-                                SZ/6 + rand() * SZ/16,
-                                SZ/2.5
+                                z(133) + rand() * z(50),
+                                z(320)
                         ]
                 ];
                 var s = 1;
@@ -924,7 +965,7 @@ function addBrow( x, y, ang, blink )
         C.stroke();
         C.restore();
 }
-function addLashes( e1, e2 )
+function addLashes( e1, e2, WINK )
 {
         C.save();
         C.lineWidth *= 0.66;
@@ -932,7 +973,7 @@ function addLashes( e1, e2 )
         var nlashes = urandint()%5+3;
         var step = PI/2/nlashes;
         var a, b, i, x, y;
-        for (i=0; i<nlashes; i++ )
+        for ( i=0; i<nlashes; i++ )
         {
                 // left lashes
                 x = e1[0], y = e1[1];
@@ -944,9 +985,11 @@ function addLashes( e1, e2 )
                         [ b[0]+x, b[1]+y ],
                         [ c[0]+x, c[1]+y ]
                 );
+                C.stroke();
+
+                if ( WINK ) continue;
 
                 // right lashes
-                C.stroke();
                 x = e2[0], y = e2[1];
                 a = getPointOnEllipse( 1.15, 0.85, sz*0.8, step*i*-1 );
                 b = getPointOnEllipse( 1.15, 0.85, sz*0.9, step*i*-1+step/2 );
@@ -963,10 +1006,10 @@ function addLashes( e1, e2 )
 function addEye( x, y, offs, stroke, bagCol )
 {
         var sz = CD.headsize, y2 = y;
-        var x2 = x + offs[0] * (SZ/40 - CD.pupSize);
+        var x2 = x + offs[0] * (z(20) - CD.pupSize);
 
         // EYE BAGS
-        var bagY = y+SZ/100;
+        var bagY = y+z(8);
         drawEllipse( x, bagY, 1, 1, CD.eyeSize*sz*1.3 );
         var grad = C.createRadialGradient(
                 x, bagY, 0,
@@ -995,12 +1038,12 @@ function addLabel()
         var txt = ["N", "i", "m", "B", "u", "d", "s"];
         var rot = [3, -3, 2, -2, 1, -1, 1];
         var w = [0, 17, 12.4, 15, 15.6, 15.2, 15.2];
-        var p, x, r=17, k=SZ/256;
-        C.font = "italic " + SZ/10 + "px Arial, sans-serif";
+        var p, x, r=17, k=z(3);
+        C.font = "italic " + z(80) + "px Arial, sans-serif";
         C.fontWeight = "900";
         C.strokeStyle = "#fff";
         C.fillStyle = "#fff";
-        C.lineWidth = SZ/30;
+        C.lineWidth = z(26);
         C.lineJoin = "round";
         C.rotate( d2r(r*-1) );
         for( i=0; i<txt.length; i++ )
@@ -1011,7 +1054,7 @@ function addLabel()
                 C.fillText( txt[i], x, lp[1] );
         }
         C.rotate( d2r(-1) );
-        C.lineWidth = SZ/128;
+        C.lineWidth = z(6);
         for( i=0; i<txt.length; i++ )
         {
                 C.rotate( d2r(rot[i]) );
@@ -1023,15 +1066,15 @@ function addLabel()
         }
         C.rotate( d2r(r-1) );
         var clbl=[
-                [0, 0, SZ/16], 
-                [SZ/-30, SZ/8, SZ/16], 
-                [SZ/-64, SZ/16, SZ/16], 
-                [SZ/14, SZ/48, SZ/16], 
-                [SZ/9, SZ/36, SZ/16], 
-                [SZ/5.5, SZ/48, SZ/16], 
-                [SZ/4.5, SZ/-64, SZ/16], 
-                [SZ/3.4, 0, SZ/18], 
-                [SZ/2.8, SZ/-32, SZ/18]
+                [0, 0, z(50)], 
+                [z(-26), z(100), 800/16], 
+                [z(-12), z(50), z(50)], 
+                [z(57), z(16), z(50)], 
+                [z(88), z(22), z(50)], 
+                [z(160.5), z(16), z(50)], 
+                [z(200.5), z(-12), z(50)], 
+                [z(266.4), z(0), z(44)], 
+                [z(400.8), z(-25), z(44)]
         ];
         C.fillStyle="#D4EEF5";
         for( i=0; i<clbl.length; i++ )
@@ -1049,34 +1092,34 @@ function addBox()
         p1 = {
                 verts: [
                         v, [SZ, 0], [SZ, SZ], 
-                        [0, SZ], v, [0, SZ/3.8], 
-                        [SZ/2.4, SZ/7.5], [SZ/2, 0], v
+                        [0, SZ], v, [0, 211], 
+                        [z(333), z(107)], [z(400), 0], v
                 ],
                 ins: [
                         v, v, v,
                         v, v, v,
-                        v, [0,SZ/9], v
+                        v, [0,z(88)], v
                 ],
                 outs: [
                         v, v, v,
                         v, v, v,
                         v, v, v
                 ],
-                lineWidth: SZ/16,
+                lineWidth: z(50),
                 strokeStyle: "#35C1D5",
                 join: "miter",
-                offs: [ SZ/25, SZ/25 ],
+                offs: [ z(32), z(32) ],
                 clr: "#00000040"
         };
         p2 = {
                 verts: [
-                        [0,SZ/3.8], [SZ/2.4,SZ/7.5],
-                        [SZ/2,0], v
+                        [0,z(211)], [z(333),z(107)],
+                        [z(400),0], v
                 ],
-                ins: [ v,v,[0,SZ/80],v ],
+                ins: [ v,v,[0,z(10)],v ],
                 outs: [ v,v,v,v ],
                 fillStyle: "#35C1D5",
-                lineWidth: SZ/16,
+                lineWidth: z(50),
                 strokeStyle: "#35C1D5",
                 join: "miter"
         };
@@ -1101,8 +1144,8 @@ function colorStrand( a, b, c, color )
         C.lineWidth = 1;
         C.strokeStyle = color;
         C.shadowColor = color;
-        C.shadowBlur = SZ/180;
-        for(var i=0; i<SZ/40; i++) C.stroke();
+        C.shadowBlur = z(4);
+        for(var i=0; i<z(20); i++) C.stroke();
         C.restore();
 }
 function chooseAtRandom( arr )
@@ -1117,7 +1160,7 @@ function addStrand()
         var a,b,b2,c, x1,x2,x3;
 
         x = CD.a[0];
-        y = ( EMO ? CD.a[1]+SZ/20 : CD.a[1] );
+        y = ( EMO ? CD.a[1]+z(40) : CD.a[1] );
         x1 = rand();
         y1 = urand();
         x2 = rand();
@@ -1175,7 +1218,7 @@ function getExpoCount( min, max )
 function addPimples()
 {
         var c = getExpoCount( 0, 20 );
-        var sz=(SZ/5)*CD.headsize;
+        var sz=z(160)*CD.headsize;
         var y = CD.a[1]+sz/2;
         var zitSz, i, p;
         var zitColor = "#f77";
@@ -1183,27 +1226,28 @@ function addPimples()
         C.clip( mask, "nonzero" );
         for( i=0; i<c; i++ )
         {
-                zitSz = SZ/150*urand();
-                p = getPointInCircle( CD.a[0], CD.a[1]+SZ/128, sz, sz/2 );
+                zitSz = z(5)*urand();
+                p = getPointInCircle( CD.a[0], CD.a[1]+z(6), sz, sz/2 );
                 C.fillStyle = zitColor;
                 fillCircle( p[0], p[1], zitSz );
                 C.fillStyle = "#fff";
-                fillCircle( p[0]+SZ/1000, p[1]-SZ/1000, zitSz/2 );
+                fillCircle( p[0]+z(1), p[1]-z(1), zitSz/2 );
         }
         C.restore();
 }
 function addFreckles( x1, x2, h )
 {
         var c = getExpoCount( 0, 75 );
-        var sz=SZ/12, i, p;
+        var sz = z(66), p, i;
         var y = CD.a[1]+sz/2;
+
         C.save();
         C.fillStyle = "#fa7";
         C.clip( mask, "nonzero" );
         for( i=0; i<c; i++ )
         {
                 p = getPointInCircle( x1, y, sz, sz/2 );
-                fillCircle( p[0], p[1], SZ/400*urand() );
+                fillCircle( p[0], p[1], z(2)*urand() );
         }
         C.restore();
 }
@@ -1221,7 +1265,7 @@ function addBlush(p,s)
 }
 function drawStacheHair( x, y, w, h )
 {
-        var len = SZ/64;
+        var len = z(12);
         var d = x-CD.a[0];
         var a = [ x, y ];
         var b = [ x+d/10, y+urand()*len  ];
@@ -1231,18 +1275,18 @@ function drawStacheHair( x, y, w, h )
 function addStache( a, b, ang )
 {
         C.save();
-        var w = max( SZ/22, abs(a) );
+        var w = max( z(36), abs(a) );
         var count = urandint()%(w*2)+20;
-        var h = SZ/64;
+        var h = z(12);
         var offsX, x, y, i;
         // C.strokeStyle = "#a07040";
-        C.lineWidth = SZ/512;
+        C.lineWidth = z(1);
         for( i=0; i<count; i++ )
         {
                 C.strokeStyle = chooseAtRandom( CD.colors );
                 offsX = rand()*w;
                 x = CD.a[0] + offsX;
-                y = CD.a[1] + urand()*h + SZ/16 + abs(offsX)*b/100;
+                y = CD.a[1] + urand()*h + z(50) + abs(offsX)*b/100;
                 drawStacheHair( x, y, w, h );
         }
         C.restore();
@@ -1250,7 +1294,7 @@ function addStache( a, b, ang )
 function addMouth( offs )
 {
         var x = CD.a[0];
-        var y = CD.a[1] + SZ/10;
+        var y = CD.a[1] + z(80);
         var a = offs[0], b = offs[1];
         var c = getHypo( a, b );
         var ss = 0.66, ang = getAngle( a, b, c );
@@ -1289,7 +1333,7 @@ function addFace( blink, bIdx )
         var cidx = nums[6] % CD.colors.length;
         var bagCol = CD.darkColors[cidx];
         var col = CD.colors[cidx];
-        var ed = max( 6, to1(nums[7])*(SZ/17) );
+        var ed = max( 6, to1(nums[7])*z(47) );
         var offs1 = [
                 to1N( nums[9] ),
                 to1N( nums[10] )
@@ -1300,26 +1344,26 @@ function addFace( blink, bIdx )
         C.lineCap = C.lineJoin = "round";
 
         // EYES
-        var e1 = [ x-SZ/24*sz - ed*sz, y ];
-        var e2 = [ x+SZ/30*sz + ed*sz, y ];
+        var e1 = [ x-z(33)*sz - ed*sz, y ];
+        var e2 = [ x+z(26)*sz + ed*sz, y ];
 
         // BLUSH
         if ( bl )
         {
                 addBlush([
-                        e1[0] - SZ/10,
-                        e1[1] + SZ/10
-                ], SZ/6 );
+                        e1[0] - z(80),
+                        e1[1] + z(80)
+                ], z(133) );
                 addBlush([
-                        e2[0] + SZ/10,
-                        e2[1] + SZ/10
-                ], SZ/6 );
+                        e2[0] + z(80),
+                        e2[1] + z(80)
+                ], z(133) );
         }
 
         // SKIN
         var offs2 = [
-                to1( nums[4] )*( SZ/8 ),
-                to1N( nums[5] )*( SZ/40 )
+                to1( nums[4] )*z(100),
+                to1N( nums[5] )*z(20)
         ];
         addFreckles( e1[0], e1[1], offs2[1] );
         addFreckles( e2[0], e2[1], offs2[1] );
@@ -1340,6 +1384,12 @@ function addFace( blink, bIdx )
                         addBrow( e1[0], e1[1], 0, blink );
                 }
                 addBrow( e2[0], e2[1], 0, blink );
+
+                // LASHES
+                if ( GENDER === 1 )
+                {
+                        addLashes( e1, e2, WINK );
+                }
         } else {
                 addEye( e1[0], e1[1], offs1, col, bagCol );
                 addEye( e2[0], e2[1], offs1, col, bagCol );
@@ -1368,6 +1418,54 @@ function addFace( blink, bIdx )
         }
         saveImg( bIdx );
 }
+function addRetroBG()
+{
+        var step, sz, c, a, b, i, j, k;
+
+        var bgC = addBrinkBG();
+
+        // SQUIGGLES
+        numSquig = urandint()%8+2;
+        numZZ = urandint()%12+8;
+        clrs = CD.colors.filter( e => e !== bgC );
+        c = chooseAtRandom( clrs );
+        step = z(800/numSquig); 
+        sz = z(800/numSquig/3);
+        for( i=0; i<=numSquig; i++ )
+        {
+                for( j=0; j<=numSquig; j++ )
+                {
+                        a = [ step*i, step*j ];
+                        b = arrMath( a, [z(60),z(-30)], '+' );
+                        addSquiggle( a, b, numZZ, c );
+                }
+        }
+
+        // TRIANGLES
+        var shapes = [
+                getRndPoly( 3, z(800/numSquig/4) ),
+                getRndPoly( 3, z(800/numSquig/4) )
+        ];
+        var shape, offset;
+        
+        clrs = clrs.filter( e => e !== c );
+        c = [ chooseAtRandom(clrs) ];
+        clrs = clrs.filter( e => e !== c[0] );
+        c.push( chooseAtRandom(clrs) );
+
+        for( i=0; i<=numSquig; i++ )
+        {
+                for( j=0; j<=numSquig; j++ )
+                {
+                        for( k=0; k<shapes.length; k++ )
+                        {
+                                offset = [ step*i+z(80), step*j+z(80) ];
+                                shape = { verts: shapes[k], fillStyle:c[k] };
+                                addShape( shape, [1,1], offset );
+                        }
+                }
+        }
+}
 function addLaserBG()
 {
         var c = ( BR_LASERS ? CD.darkColors[1] : CD.darkColors[urandint()%4] );
@@ -1389,7 +1487,7 @@ function addFractBG()
 {
         var i = urandint() % CD.colors.length;
         addPerlinNoise( CD.colors[i] );
-        fastBlur( SZ/32 );
+        fastBlur( z(4) );
 }
 function addCurtainBG()
 {
@@ -1418,6 +1516,23 @@ function addClassicBG()
         C.fillStyle = grad;
         C.fillRect( 0, 0, SZ, SZ );
 }
+function addBrinkBG()
+{
+        C.save();
+        var grad = C.createRadialGradient(
+                CD.a[0], CD.a[1], 0, 
+                CD.a[0], CD.a[1], SZ
+        );
+        var i = urandint()%CD.colors.length;
+        var ca = CD.colors[i];
+        var cb = CD.darkColors[i];
+        grad.addColorStop( 0, ca );
+        grad.addColorStop( 1, cb );
+        C.fillStyle = grad;
+        C.fillRect( 0, 0, SZ, SZ );
+
+        return ca;
+}
 function addBG( bIdx )
 {
         if ( key ) return;
@@ -1426,28 +1541,17 @@ function addBG( bIdx )
                 C.drawImage( imgBuff[bIdx], 0, 0 );
                 return;
         }
-        var scene = urandint()%4;
+
         C.save();
-        switch( scene )
-        {
-                case 0:
-                        addLaserBG();
-                        break;
-                case 1:
-                        addFractBG();
-                        break;
-                case 2:
-                        addClassicBG();
-                        break;
-                case 3:
-                        addCurtainBG();
-                        break;
-                default:
-                        break;
-        }
+        var funcs = [ addLaserBG, addFractBG, addClassicBG, addCurtainBG, addBrinkBG, addRetroBG ];
+        // var func = chooseAtRandom( funcs );
+        var func = addFractBG;
+        func();
+        log( "Background Type: " + func.name );
         C.restore();
+
         addCloud();
-        if ( scene !== 2 ) addVignette(0.5);
+        if ( func.name !== "addClassicBG" ) addVignette(0.5);
         saveImg( bIdx );
         imgBuff[0] = imgBuff[bIdx];
 }
@@ -1497,19 +1601,20 @@ function init()
         }
 
         CVS.width = CVS.height = SZ;
-        CTR = SZ/2;
+        CTR = z(400);
         CD = {
-                lineWidth: SZ/80,
+                lineWidth: z(10),
                 hairLen: urand(),
-                headsize: 1.2, bodysize: SZ/8,
-                eyeSize: SZ/28, pupSize: SZ/200,
-                a: [ CTR, CTR - SZ/32 ],
-                shadBlur: SZ/67,
-                blur: SZ/80,
+                headsize: 1.2, bodysize: z(100),
+                eyeSize: z(28), pupSize: z(4),
+                a: [ CTR, CTR - z(25) ],
+                shadBlur: z(11),
+                blur: z(10),
                 colors: [
                         "#f2668b", "#23c7d9",
                         "#48d9a4", "#f2bf27"
-                ], darkColors: [
+                ],
+                darkColors: [
                         "#813345", "#126374",
                         "#247452", "#815813"
                 ],
@@ -1519,7 +1624,7 @@ function init()
                 wireShadC: "#494102"
         };
 
-        lp = [ SZ/-96, SZ/4.2 ];
+        lp = [ z(-8), z(190) ];
         newHash();
         resetSeed();
         nums = getNums();
@@ -1542,8 +1647,10 @@ function render( blink )
         } else {
                 i=0; j=1; k=2;
         }
-        if ( blink !== undefined ){
-                if ( !imgBuff[k] ){
+        if ( blink !== undefined )
+        {
+                if ( !imgBuff[k] )
+                {
                         addBG( i );
                         addFace( blink, k );
                 } else {
@@ -1551,7 +1658,8 @@ function render( blink )
                 }
                 setTimeout( render, 200 );
         } else {
-                if ( !imgBuff[j] ){
+                if ( !imgBuff[j] )
+                {
                         addBG( i );
                         addFace( blink, j );
                 } else {
