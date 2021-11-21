@@ -1544,8 +1544,7 @@ function addBG( bIdx )
 
         C.save();
         var funcs = [ addLaserBG, addFractBG, addClassicBG, addCurtainBG, addBrinkBG, addRetroBG ];
-        // var func = chooseAtRandom( funcs );
-        var func = addFractBG;
+        var func = chooseAtRandom( funcs );
         func();
         log( "Background Type: " + func.name );
         C.restore();
