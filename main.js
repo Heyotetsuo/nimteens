@@ -1,13 +1,17 @@
 var round=Math.round,floor=Math.floor,abs=Math.abs,sqrt=Math.sqrt,asin=Math.asin,acos=Math.acos,sin=Math.sin,cos=Math.cos,PI=Math.PI,min=Math.min,max=Math.max,pow=Math.pow;
 var cloudBuff,imgBuff,nums,lp,stache,key,seed,mask;
-var log=console.log,doc=document,win=window,hidden,BLINK_TO,BOX=false,shad;
+var log=console.log,doc=document,win=window,hidden,BLINK_TO,BOX=false,shad,DEV=false;
 var CVS,SZ,CTR,CD,C,EASTER=false,WINK=false;
 var GENDER=1,EMO=false,BALD=false,BR_LASERS;
 var RUN_TOTAL = 400;
 
 // HANDS
 hands = [
-        {"width":595.280029296875,"height":841.890014648438,"_2":{"verts":[[243.5,380.6],[235.7,471.9],[215.9,503.8],[212,514],[234.9,538.1],[224.2,597.9],[224.4,611.5],[235.1,618.1],[242.8,607.4],[262.5,540.7],[274.1,603.8],[280.3,617],[293.6,619.6],[297.8,604.1],[283.8,546.9],[301.7,553.3],[309.8,537.9],[328.4,538.2],[331.4,516.8],[318.4,484.5],[307.4,467.1],[303.5,449.2],[304.1,404.7],[319,274.4],[319,257.9],[286.5,240.6],[237.1,244.3],[233.4,280.1]],"ins":[[-3.4,-33.5],[13.7,-27.8],[6.3,-10.8],[0.3,-3.7],[-11,-4.6],[3.1,-20],[-1.6,-4.3],[-4.4,1.3],[-1.3,4.4],[-6.6,22.2],[-5.7,-20.7],[-3.4,-3.6],[-4.1,2.7],[0.6,5.6],[7.1,18.3],[-6.5,1.7],[3.1,5.9],[-4.6,5.8],[1.4,7.3],[6.4,9.8],[2.7,6.3],[0.6,6.1],[-1.1,14.8],[-6.7,43.2],[1.7,5.3],[13.1,0.7],[12.7,-6.4],[-1.2,-12.2]],"outs":[[3.1,30.8],[-5.5,11.2],[-1.8,3.2],[-1.1,11.9],[-4,19.9],[-0.7,4.6],[1.6,4.3],[4.4,-1.3],[6.6,-22.2],[2,21.3],[1.3,4.7],[3.4,3.6],[4.7,-3.1],[-2.2,-19.5],[4.6,4.9],[6.5,-1.7],[3,6.8],[4.6,-5.9],[-2.2,-11.5],[-3.8,-5.8],[-2.4,-5.6],[-1.4,-14.8],[3.2,-43.6],[0.9,-5.5],[-4,-12.5],[-13.8,-0.8],[-11.9,6],[3.3,33.5]],"fillStyle":"#ffffff","shadowOffsetX":-4,"shadowColor":"#00000060","shadowBlur":16},"_1":{"verts":[[236.8,536.1],[265.4,533],[267,528.2],[264,523.3],[248,510],[257.1,493.1],[247.8,477.7]],"ins":[[0,0],[-6.1,9.1],[0.2,1.7],[1.4,1.4],[5.8,3.9],[-0.6,6.5],[6.3,1.7]],"outs":[[7.9,7.6],[0.9,-1.4],[-0.2,-1.9],[-4.9,-4.9],[4.5,-4.7],[0.6,-6.5],[0,0]],"lineWidth":4,"strokeStyle":"#000000"},"_0":{"verts":[[284.1,545.2],[279.1,530.3],[280.9,519.2],[287.5,520.3],[298.5,528.1],[294.6,513.9],[303.3,503.5],[315.5,515],[326,528.9]],"ins":[[0,0],[1.7,5],[-3.8,1.7],[-2.1,-1.1],[-3.3,-3],[-0.3,4.9],[-4.9,0.3],[-2.2,-5.6],[-5.8,-1.6]],"outs":[[-1.7,-5],[-1.3,-3.9],[2.1,-0.9],[4,2.1],[-2.1,-4.5],[0.3,-4.9],[6,-0.4],[2.2,5.6],[0,0]],"lineWidth":4,"strokeStyle":"#000000"}}
+        {"width":269.733431776442,"height":273.99083764285,"_0":{"verts":[[221.5,-255.4],[197.9,-187.1],[176.1,-108.2],[174.3,-93.7],[183.4,-83.5],[185.4,-73.9],[195.2,-74.6],[192.3,-33.6],[198,-19.7],[201.3,-18.6],[205.9,-23.5],[212.1,-73.4],[214.7,-67],[220.9,-66.4],[222.2,-69.4],[224.1,-85.8],[232.7,-83.7],[236.5,-93.4],[234.2,-118.2],[231.3,-127.7],[233.6,-137.3],[267.7,-244]],"ins":[[0,0],[6.4,-23.2],[7.3,-26.3],[-0.8,-4.8],[-4.8,-0.6],[-2.9,-2.2],[-2.5,2.5],[-1,-13.7],[-4.3,-2.9],[-1.2,0.1],[-0.9,2.2],[0,16.9],[-1.6,-1.7],[-1.6,1.7],[-0.2,1.1],[-0.1,5.5],[-2.7,2.3],[-0.4,3.5],[2.9,7.9],[0.2,3.3],[-1.2,3.1],[-9.5,36.1]],"outs":[[-10.7,21.6],[-7.3,26.3],[-1.3,4.7],[0.8,4.8],[-1.7,3.1],[2.9,2.2],[-2.9,13.4],[0.4,5.2],[1,0.7],[2.3,-0.3],[6.2,-15.7],[0.5,2.3],[1.6,1.7],[0.8,-0.8],[1.2,-5.4],[0.6,3.5],[2.7,-2.3],[0.9,-8.3],[-1.1,-3.1],[-0.2,-3.3],[13.3,-34.9],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_1":{"verts":[[2,-268.7],[57.8,-107.3],[65.8,-82],[65,-64],[70.2,-54.1],[78.6,-58.4],[83,-47.1],[91.4,-39.1],[99.2,-45.7],[118.1,-4.5],[121.5,-2.1],[126.4,-5.1],[126.9,-11.4],[120.6,-39.8],[129.4,-39],[130.4,-49.2],[135.7,-48.9],[137.8,-54.6],[133,-81.9],[124,-98.6],[119,-117.4],[58.6,-272]],"ins":[[0,0],[-13.7,-28.8],[-0.3,-8.9],[-0.5,-6],[-3.4,-1.8],[0.3,3.8],[-1.6,-3.7],[-4,-0.8],[0.9,3.9],[-9.9,-11.5],[-1.4,-0.3],[-0.8,1.9],[0.2,2.1],[3.3,9.1],[-2.3,2.7],[1.2,3.4],[-1.5,1.4],[-0.2,2.1],[4,8.4],[2.5,5.8],[2.4,6.1],[20.7,45.7]],"outs":[[13.7,28.8],[3.8,8.1],[0.2,6],[0.3,3.8],[3.4,1.8],[1.9,3.6],[1.6,3.7],[4,0.8],[4.4,14.6],[0.9,1.1],[2.1,0.4],[0.8,-1.9],[-0.9,-9.7],[1.2,3.4],[2.3,-2.7],[0.9,1.8],[1.5,-1.4],[0.9,-9.3],[-2.7,-5.7],[-2.6,-6],[-19.1,-48.6],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"}},
+        {"width":86.92204339822,"height":246.254758327793,"_0":{"verts":[[6.7,-236.6],[25.2,-99.8],[25.3,-90.8],[20.2,-83.8],[3.6,-63.5],[3.4,-56.5],[7.8,-57.4],[29.4,-72],[14,-15.7],[22.7,-25.4],[36.1,-61.6],[30.9,-14.4],[34.9,-2.9],[39.9,-2.8],[41.2,-5.6],[50.2,-57.8],[57.7,-9.4],[63.6,-22.5],[64.1,-60.9],[69.4,-35.7],[72.7,-29.7],[79,-29],[80.9,-31.9],[74.8,-84.9],[64.6,-100.5],[63,-110],[50.6,-244.3]],"ins":[[0,0],[-6.2,-35.6],[1,-2.9],[2,-2.1],[4.9,-7.2],[-2.4,-1.2],[-1.4,0.8],[-6.8,5.4],[0.7,-19.6],[-1.8,4.1],[-3.8,12.3],[-0.1,-15.9],[-3.5,-2.4],[-1.3,1.2],[-0.3,1],[-1.6,17.6],[-9.1,-13.9],[-0.3,5.1],[0.3,12.8],[-2.7,-8.1],[-1.7,-1.5],[-1.8,1.5],[-0.4,1.1],[10.8,15.1],[2,5.9],[0.3,3.2],[4.1,44.8]],"outs":[[6.2,35.6],[0.5,3],[-0.9,2.8],[-6.1,6.3],[-1.5,2.2],[1.4,0.7],[7.6,-4.3],[-9.3,17.3],[4.4,-1],[5.2,-11.8],[-3.5,15.5],[0,4.2],[1.5,1],[0.8,-0.7],[4.3,-17.1],[-1,16.6],[4.7,-1.9],[0.6,-12.8],[0.7,8.6],[0.7,2.2],[1.7,1.5],[0.9,-0.7],[7.1,-17.1],[-3.6,-5.1],[-1,-3],[-4.1,-44.8],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"}},
+        {"width":239.333242787707,"height":160.818525098062,"_0":{"verts":[[128.1,-60.9],[133.7,-70.3],[148.5,-65.8],[167.1,-48.9],[155,-71],[155.2,-74.2],[160.5,-75.8],[172.4,-71.5],[194,-149.5]],"ins":[[0,0],[-5.2,1.3],[-4.2,-3.3],[-4.7,-2.5],[1,5.4],[-0.5,1],[-1.9,-0.3],[-3.7,-2.1],[-8.8,25.5]],"outs":[[-3.3,-4.2],[5.2,-1.3],[4.2,3.3],[-2.9,-4.6],[-0.2,-1.1],[0.9,-1.7],[4.2,0.7],[5.5,-26.4],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_1":{"verts":[[237.3,-146.9],[199.8,-62.2],[177.1,-23.3],[162,-11.8],[145.1,-17.4]],"ins":[[0,0],[13.3,-27.9],[9.6,-11.6],[6.1,-1.8],[3.1,5.6]],"outs":[[-11,28.9],[-6.5,13.6],[-4.1,4.9],[-6.1,1.8],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_2":{"verts":[[2,-154.1],[94.1,-14.6],[103.2,-5.2],[126.9,-4.6],[146.1,-19.8],[158.7,-35.8],[158.2,-48.6],[152.1,-48.6],[130.5,-40.7],[140.9,-62.6],[115.3,-53.9],[118.7,-67.9],[113.8,-70.3],[93.9,-71],[88.2,-71.1],[85,-75.1],[43.8,-158.8]],"ins":[[0,0],[-34.2,-44.1],[-3.7,-2.4],[-7.5,3.3],[-5.6,6],[-3.5,5.8],[4.4,2.1],[2,-0.5],[6.9,-3.4],[-1,8.1],[7,-6.1],[3.7,3.9],[1.8,0.4],[6.6,-1.2],[1.7,0.9],[0.8,1.6],[13.7,27.9]],"outs":[[23.4,50.7],[2.7,3.5],[6.9,4.4],[7.5,-3.3],[4.6,-5],[2.5,-4.2],[-1.9,-0.9],[-7.4,1.9],[5.7,-5.9],[-9.2,-0.6],[3.5,-4],[-1.3,-1.3],[-6.5,-1.6],[-1.9,0.3],[-1.6,-0.8],[-13.7,-27.9],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"}},
+        {"width":79.1914851867605,"height":253.822115881793,"_0":{"verts":[[69.9,-62.1],[56.8,-55],[49.2,-60.2],[43.8,-75.9],[48.3,-83],[54.2,-81.4],[55,-76.1]],"ins":[[0,0],[5.1,0.8],[1.9,2.5],[-0.4,5.6],[-2.9,0.9],[-1.6,-1.4],[-1,-1.9]],"outs":[[-3.5,3.8],[-3.1,-0.5],[-3.5,-4.4],[0.2,-3],[2.1,-0.6],[1.6,1.4],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_1":{"verts":[[17.5,-64.5],[8.9,-15.4],[10.8,-9.8],[15.7,-10.8],[18,-15.6],[30.6,-55.5],[27.5,-29.9],[31.1,-4.8],[33.8,-2.1],[38.9,-7.9],[47.2,-62.8]],"ins":[[0,0],[0.7,-16.7],[-1.8,-1.1],[-1.2,1.3],[-0.5,1.7],[-4.2,13.3],[0.9,-8.6],[-4.1,-7.5],[-1.3,-0.3],[-0.5,2.9],[-2.2,18.4]],"outs":[[-5,15.9],[-0.1,2.1],[1.5,0.9],[1.2,-1.3],[4.2,-13.3],[-0.2,8.6],[-0.9,8.6],[0.6,1.1],[2.8,0.8],[3.3,-18.2],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_2":{"verts":[[71.4,-249.7],[61,-106.3],[76.8,-66],[75.5,-62.3],[69.5,-61.7],[53.9,-89.1],[66.7,-77.6]],"ins":[[0,0],[7.6,-47.7],[1.9,-14.9],[0.9,-0.9],[2,0.6],[-2.7,11.2],[-2.2,-5.5]],"outs":[[-5.2,48],[11.6,9.7],[-0.2,1.3],[-1.5,1.5],[-11,-3.5],[5.7,1.6],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_3":{"verts":[[14.5,-251.8],[21.3,-150.1],[18.2,-117.8],[3.7,-86.7],[2.2,-76.8],[20.2,-64.4],[26.9,-64.2],[32.5,-74.3],[27.8,-85.7],[35.9,-108.6],[36.5,-103.3]],"ins":[[0,0],[-2.9,-59.3],[2.4,-9.9],[4.2,-10.7],[-0.7,-3.3],[-7.5,-1.6],[-2.2,0.7],[0.4,4.1],[2.2,3.6],[1.4,8.4],[-0.2,-1.8]],"outs":[[4.2,23],[0.5,10.2],[-2.7,11.1],[-1.2,3.1],[1.6,7.5],[2.2,0.5],[4,-1.2],[-0.4,-4.1],[6.4,-5.6],[0.2,1.8],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"}},
+        {"width":82.4683192072989,"height":250.525820793488,"_0":{"verts":[[58.6,-57.4],[43.2,-56.6],[40.1,-57.1],[37.4,-59.8],[36.4,-82.7],[41.2,-86.4],[43.8,-85],[49.8,-77.3]],"ins":[[0,0],[5.2,0],[1,0.4],[0.7,1.1],[-3.6,7.1],[-2.1,-0.3],[-0.8,-0.6],[-1.5,-2.9]],"outs":[[-5.1,0.6],[-1,0],[-1.2,-0.5],[-4.2,-6.8],[1,-1.9],[1,0.1],[2.5,2.1],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_1":{"verts":[[73.3,-66.7],[70.3,-59.7],[64.1,-55.6],[56.7,-58.9],[49.8,-85.1],[51.8,-89.6],[56.6,-90],[59.5,-86.4]],"ins":[[0,0],[1.4,-2.1],[2.5,-0.2],[2,1.9],[-1.3,9.3],[-1.4,1],[-1.6,-0.4],[-2,-1.7]],"outs":[[-0.8,2.4],[-1.4,2.1],[-2.8,0.2],[-6.7,-6.5],[0.2,-1.7],[1.4,-1],[2.5,0.7],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_2":{"verts":[[20.4,-63.3],[18,-58],[13.6,-20.9],[14.4,-10.3],[20.5,-2],[25.1,-12.2],[34.3,-59.7]],"ins":[[0,0],[0.4,-1.9],[0.4,-12.5],[-0.9,-3.4],[-3.1,-1.7],[-0.9,3.7],[-2.2,16]],"outs":[[-1.5,1.3],[-2.5,12.2],[-0.1,3.5],[0.9,3.4],[2.6,-2.7],[3.9,-15.6],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_3":{"verts":[[70.4,-243.8],[70.5,-141.6],[70.4,-109.3],[76.6,-90.7],[80.4,-71.3],[79.9,-67.9],[73.1,-67.6],[59.1,-87.2],[61,-95],[66.4,-91.9]],"ins":[[0,0],[-2.5,-36.9],[-2.3,-10.5],[-2,-6.2],[-0.5,-6.6],[0.6,-1],[2.2,1.2],[1.4,8.2],[-2.3,1.7],[1.2,-2.6]],"outs":[[-0.7,33.8],[0.7,10.8],[1.4,6.4],[2,6.3],[0.1,1.2],[-1.4,2.1],[-7.3,-3.9],[-0.5,-2.8],[2.3,-1.7],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"},"_4":{"verts":[[19.9,-248.5],[16.6,-124.3],[14.3,-106.4],[2.1,-77.8],[2.6,-73.1],[5.7,-70.4],[22.6,-64.7],[32.4,-69.3],[31.6,-73.2],[24.4,-82.3],[33.4,-96.9],[31,-93.8]],"ins":[[0,0],[1.8,-41.4],[1.8,-5.8],[1.5,-10.3],[-0.8,-1.4],[-1.2,-0.7],[-6,-0.6],[-0.6,3.9],[0.5,1.2],[3.2,2.3],[-0.5,5.9],[0.8,-1]],"outs":[[-0.4,41.4],[-0.3,6],[-3.1,9.9],[-0.2,1.6],[0.7,1.2],[5.2,3.1],[4,0.4],[0.2,-1.3],[-1.5,-3.6],[5.1,-3.1],[-0.8,1],[0,0]],"lineWidth":4,"strokeStyle":"#000000","fillStyle":"white"}}
 ];
 
 // RANDOMNESS
@@ -143,8 +147,8 @@ function copyArray( a )
 }
 function z( n )
 {
-        var dvdnd = 800 / n;
-        return SZ / dvdnd | 0;
+        var d = 800 / n;
+        return SZ / d;
 }
 
 
@@ -507,73 +511,33 @@ function addSquiggle( a, b, n, color )
         C.stroke();
         C.restore();
 }
-function addShape( shape, s, o, fill, stroke, shad )
-// REQUIRED: shape: 2dmatrix, s: scale [x,y], o: offset [x,y]
-// OPTIONAL: fill: color, stroke: color, shad: color
+function addShape(shape, s, o, C)
 {
-        C.save();
-        var ax, ay, bx, by, cx, cy, i, j, p;
         var vs = shape.verts;
+        var l = vs.length;
         var is = shape.ins || null;
         var os = shape.outs || null;
-        var x = o ? o[0] : z(400);
-        var y = o ? o[1] : z(400);
-        var l = vs.length;
-        var blank = "#00000000";
-        var style = "";
-        var styles = {
-                shadowOffsetX: z(3),
-                shadowOffsetY: z(3),
-                shadowColor: blank,
-                shadowBlur: 0,
-                fillStyle: fill || blank,
-                lineWidth: z(3),
-                strokeStyle: blank,
-                lineJoin: "round",
-                lineCap: "round"
-        }
-        if ( stroke ){ style = mergeStyle( style, stroke ); }
-        if ( shad ){ style = mergeStyle( style, shad ); }
-        C.moveTo(
-                x + vs[0][0]*s[0],
-                y + vs[0][1]*s[1]
-        );
+        var x = (o?o[0]:0), y = (o?o[1]:0);
+        var ax, ay, bx, by, cx, cy;
+        var i,j,k;
+
+        C.save();
         C.beginPath();
-        for( i=0+l; i<=l+l-1; i++ )
+        C.moveTo(
+                x + vs[0][0] * s[0],
+                y + vs[0][1] * s[1]
+        );
+        for( i=1; i<l; i++ )
         {
-                j = i%l; k = (i-1)%l;
-                ax = null; ay = null;
-                bx = null; by = null;
-                if ( os )
-                {
-                        if ( j<1 )
-                        {
-                                ax = x + vs[0][0]*s[0];
-                                ay = y + vs[0][1]*s[1];
-                        } else {
-                                ax = x + (
-                                        vs[k][0] +
-                                        os[k][0]
-                                ) * s[0];
-                                ay = y + (
-                                        vs[k][1] +
-                                        os[k][1]
-                                ) * s[1];
-                        }
-                }
-                if ( is )
-                {
-                        bx = x + (
-                                vs[j][0] +
-                                is[j][0]
-                        ) * s[0];
-                        by = y + (
-                                vs[j][1] +
-                                is[j][1]
-                        ) * s[1];
-                }
-                cx = x + vs[i%l][0] * s[0];
-                cy = y + vs[i%l][1] * s[1];
+                j = (i-1)%l, k = i%l;
+                os ? ax = x + ( vs[j][0] + os[j][0] ) * s[0] : null;
+                os ? ay = y + ( vs[j][1] + os[j][1] ) * s[1] : null;
+                is ? bx = x + ( vs[k][0] + is[k][0] ) * s[0] : null;
+                is ? by = y + ( vs[k][1] + is[k][1] ) * s[1] : null;
+                cx = x + vs[k][0] * s[0];
+                cy = y + vs[k][1] * s[1];
+
+                // finally add it to the canvas
                 if ( is && os )
                 {
                         C.bezierCurveTo( ax, ay, bx, by, cx, cy );
@@ -581,35 +545,29 @@ function addShape( shape, s, o, fill, stroke, shad )
                         C.lineTo( cx, cy );
                 }
         }
-        for( var p in styles )
+        C.lineJoin = "round";
+        var props = ["strokeStyle","lineWidth","fillStyle"], p;
+        for( i=0; i<props.length; i++ )
         {
-                style = shape[p];
-                C[p] = shape[p] || styles[p];
+                p = props[i];
+                C[p] = shape[p] || null;
         }
-        if (shape.fillStyle) C.fill();
-        if ( C.lineWidth )
-        {
-                C.lineWidth *= (s[0]+abs(s[1]))/2;
-                C.stroke();
-        }
+        if ( shape["fillStyle"] ) C.fill();
+        if ( shape["lineWidth"] ) C.stroke();
         C.restore();
 }
-function renderGroup( group, s, o )
+
+function renderLayer( layer, s, o, C )
 {
-        var shape,p, w=group.width, h=group.height;
-        var S = [s[0]*(SZ/h),s[1]*(SZ/h)*-1];
-        var O = [
-                o[0] + CTR - (w/2*S[0]),
-                o[1] + CTR - (h/2*S[1])
-        ];
-        for( p in group )
+        var shape,path,p,q;
+
+        s[1] *= -1;
+
+        for( p in layer )
         {
-                C.save();
-                if ( p.match(/^_\d/) )
-                {
-                        addShape( group[p], S, O );
-                }
-                C.restore();
+                if ( !p.match(/_\d+/) ) continue;
+                shape = layer[p];
+                addShape( shape, s, o, C );
         }
 }
 function addVignette( amount )
@@ -630,48 +588,62 @@ function addLaser( line, sz )
 {
         drawLine( line[0], line[1] );
         C.lineWidth = sz;
-        var inc, i;
+        var inc, opac, i=1, n=sz/20, rat;
 
-        for( i=0; i<20; i++ )
+        C.lineWidth = 1;
+        C.stroke();
+
+        while( n < sz )
         {
-                inc = (i+1);
-                C.lineWidth = sz/inc;
+                i++;
+                C.lineWidth = n *= 2;
                 C.stroke();
         }
 }
-function addLasers()
+function getLaserConfig()
 {
-        var paths=[], newPath, diff, sz, i;
-        var laserSz=getRange(1,100), pal=getPalette();
-        var laserN=urandint()%40, laserWeight=urand()%1;
-        var minSz=laserSz[0], maxSz=laserSz[1];
-
-        for( i=0; i<laserN; i++ )
+        var paths=[], i;
+        var count = urandint()%20+10;
+        for( i=0; i<count; i++ )
         {
                 paths.push( getRndLine() );
         }
+        var sz = getRange(1,100);
+        var cfg = {
+                paths: paths,
+                sz: sz,
+                pal: getPalette(),
+                n: urandint()%40,
+                weight: urand()%1,
+                minSz: sz[0],
+                maxSz: sz[1]
+        }
+        return cfg;
+}
+function addLasers( cfg, color, size )
+{
+        var newPath, diff, sz, i;
+        var paths=cfg.paths, minSz=cfg.minSz, maxSz=cfg.maxSz;
 
         C.save();
-        C.strokeStyle = "#060606";
         C.globalCompositeOperation = "lighter";
 
         for( i=0; i<paths.length; i++ )
         {
-                // get red or blue stroke
-                C.strokeStyle = ( BR_LASERS ? CD.laserColors[urandint()%2] : CD.strokeStyle );
 
                 // make rnd size SZ btwn MINSZ and MAXSZ
                 sz = urandint()%(maxSz-minSz)+minSz;
 
                 // find weighted diff DIFF (PATH - PPATH) * WEIGHT
                 // to randomize randomness of lasers
-                diff = arrMath( arrMath(paths[0],paths[i],'-'), laserWeight, '*' );
+                diff = arrMath( arrMath(paths[0],paths[i],'-'), cfg.weight, '*' );
                 newPath = arrMath( paths[i], diff, '-' );
 
-                addLaser( newPath, z(160) );
+                // get red or blue stroke
+                C.strokeStyle = ( BR_LASERS ? color : CD.laserColors[urandint()%2] );
+                addLaser( newPath, z(size) );
         }
         C.restore();
-        return maxSz;
 }
 function randomNoise( rgb )
 {
@@ -704,6 +676,7 @@ function addPerlinNoise( rgb )
         var noise = randomNoise( rgb );
         var sz = 4 + urandint()%22;
         var x, y;
+        if ( DEV ) return;
 
         C.save();
 
@@ -755,6 +728,8 @@ function addCurtains( rgb )
         C.globalCompositeOperation = "multiply";
         C.fillStyle = grad;
         C.fillRect( 0, 0, SZ, SZ );
+
+        if ( DEV ) return;
 
         fastBlur( z(16) );
 
@@ -930,21 +905,59 @@ function addCloud()
         {
                 addHair( nums[19]%200+200 );
         }
-
-        // HANDS
-        if ( rand() > 0.5 )
+}
+function normalizeLayer( layer )
+{
+        function resize( arr )
         {
-                var hIdx = urandint()%hands.length;
-                var hand = hands[hIdx];
-                var o = [
-                        [
-                                z(133) + rand() * z(50),
-                                z(320)
-                        ]
-                ];
-                var s = 1;
-                renderGroup( hand, [s,s], o[hIdx] ); 
+                for( var i=0; i<arr.length; i++ )
+                {
+                        arr[i][0] = z( arr[i][0] );
+                        arr[i][1] = z( arr[i][1] );
+                }
+                return arr;
         }
+        for( var p in layer )
+        {
+                if ( !p.match(/_\d+/) ) continue;
+                layer[p].verts = resize( layer[p].verts );
+                layer[p].ins = resize( layer[p].ins );
+                layer[p].outs = resize( layer[p].outs );
+        }
+}
+function copyObj( obj )
+{
+        return JSON.parse( JSON.stringify(obj) );
+}
+function addHands()
+{
+        var hIdx = urandint()%hands.length;
+        var hand = hands[hIdx];
+
+        logf( "hIdx: %s", [hIdx] );
+
+        // deal with inconsistent art sizes (locations)
+        var xOffs = rand()*z(50);
+        var o = [
+                [ z(200)+xOffs, z(570) ],
+                [ z(230)+xOffs, z(570) ],
+                [ z(200)+xOffs, z(650) ],
+                [ z(500)+xOffs, z(570) ],
+                [ z(500)+xOffs, z(570) ]
+        ][hIdx];
+
+        // deal with inconsistent art sizes (sizes)
+        var s = [
+                [ 1, 1 ],
+                [ 1.1, 1.1 ],
+                [ 1.1, 1.1 ],
+                [ 1.1, 1.1 ],
+                [ 1.1, 1.1 ]
+        ][hIdx];
+
+        var copy = copyObj( hand );
+        normalizeLayer( copy );
+        renderLayer( copy, s, o, C ); 
 }
 function addBrow( x, y, ang, blink )
 {
@@ -1033,98 +1046,9 @@ function addEye( x, y, offs, stroke, bagCol )
 }
 function addLabel()
 {
-        C.save();
-        var clr = [ "#F05878", "#F2C01F", "#35C1D4", "#62C29C" ];
-        var txt = ["N", "i", "m", "B", "u", "d", "s"];
-        var rot = [3, -3, 2, -2, 1, -1, 1];
-        var w = [0, 17, 12.4, 15, 15.6, 15.2, 15.2];
-        var p, x, r=17, k=z(3);
-        C.font = "italic " + z(80) + "px Arial, sans-serif";
-        C.fontWeight = "900";
-        C.strokeStyle = "#fff";
-        C.fillStyle = "#fff";
-        C.lineWidth = z(26);
-        C.lineJoin = "round";
-        C.rotate( d2r(r*-1) );
-        for( i=0; i<txt.length; i++ )
-        {
-                C.rotate( d2r(rot[i]) );
-                x = lp[0] + ( i*k*w[i] );
-                C.strokeText( txt[i], x, lp[1] );
-                C.fillText( txt[i], x, lp[1] );
-        }
-        C.rotate( d2r(-1) );
-        C.lineWidth = z(6);
-        for( i=0; i<txt.length; i++ )
-        {
-                C.rotate( d2r(rot[i]) );
-                x = lp[0]+( i*k*w[i] );
-                C.strokeStyle = clr[i%4];
-                C.strokeText( txt[i], x, lp[1] );
-                C.fillStyle = clr[i%4];
-                C.fillText( txt[i], x, lp[1] );
-        }
-        C.rotate( d2r(r-1) );
-        var clbl=[
-                [0, 0, z(50)], 
-                [z(-26), z(100), 800/16], 
-                [z(-12), z(50), z(50)], 
-                [z(57), z(16), z(50)], 
-                [z(88), z(22), z(50)], 
-                [z(160.5), z(16), z(50)], 
-                [z(200.5), z(-12), z(50)], 
-                [z(266.4), z(0), z(44)], 
-                [z(400.8), z(-25), z(44)]
-        ];
-        C.fillStyle="#D4EEF5";
-        for( i=0; i<clbl.length; i++ )
-        {
-                p = clbl[i];
-                fillCircle( p[0], p[1], p[2] );
-        }
-        C.restore();
 }
 function addBox()
 {
-        var stk, shad, v = [0,0];
-        C.fillStyle = "#ffffff20";
-        C.fillRect( 0, 0, SZ, SZ );
-        p1 = {
-                verts: [
-                        v, [SZ, 0], [SZ, SZ], 
-                        [0, SZ], v, [0, 211], 
-                        [z(333), z(107)], [z(400), 0], v
-                ],
-                ins: [
-                        v, v, v,
-                        v, v, v,
-                        v, [0,z(88)], v
-                ],
-                outs: [
-                        v, v, v,
-                        v, v, v,
-                        v, v, v
-                ],
-                lineWidth: z(50),
-                strokeStyle: "#35C1D5",
-                join: "miter",
-                offs: [ z(32), z(32) ],
-                clr: "#00000040"
-        };
-        p2 = {
-                verts: [
-                        [0,z(211)], [z(333),z(107)],
-                        [z(400),0], v
-                ],
-                ins: [ v,v,[0,z(10)],v ],
-                outs: [ v,v,v,v ],
-                fillStyle: "#35C1D5",
-                lineWidth: z(50),
-                strokeStyle: "#35C1D5",
-                join: "miter"
-        };
-        addShape( p1, [1,1], [0,0] );
-        addShape( p2, [1,1], [0,0] );
 }
 function drawStrand( a, b, c, clr )
 {
@@ -1134,6 +1058,15 @@ function drawStrand( a, b, c, clr )
         C.fillStyle = "#00000000";
         C.strokeStyle = "black";
         C.lineWidth = CD.lineWidth;
+        C.stroke();
+        C.restore();
+}
+function quickStrand( a, b, c, color )
+{
+        drawCurve(a,b,c);
+        C.save();
+        C.lineWidth = 3;
+        C.strokeStyle = color;
         C.stroke();
         C.restore();
 }
@@ -1152,7 +1085,7 @@ function chooseAtRandom( arr )
 {
         return arr[urandint()%arr.length];
 }
-function addStrand()
+function addStrand( len )
 {
         var color = chooseAtRandom( CD.colors );
         var hairh = SZ/CD.headsize/6;
@@ -1198,15 +1131,22 @@ function addStrand()
         b = b2;
         c = addComb( b, c, CD.windWeight/2 );
 
-        drawStrand( a, b, c );
-        colorStrand( a, b, c, color );
+        if ( DEV )
+        {
+                quickStrand( a, b, c, color );
+        } else {
+                drawStrand( a, b, c );
+                colorStrand( a, b, c, color );
+        }
 }
 function addHair( c )
 {
         resetSeed();
-        for( var i=0; i<c; i++ )
+        var len = urand(), i;
+        if ( DEV ) c /= 10;
+        for( i=0; i<c; i++ )
         {
-                addStrand( i );
+                addStrand( len );
         }
 }
 function getExpoCount( min, max )
@@ -1286,7 +1226,7 @@ function addStache( a, b, ang )
                 C.strokeStyle = chooseAtRandom( CD.colors );
                 offsX = rand()*w;
                 x = CD.a[0] + offsX;
-                y = CD.a[1] + urand()*h + z(50) + abs(offsX)*b/100;
+                y = CD.a[1] + urand()*h + z(50) + abs(offsX)*b/z(100);
                 drawStacheHair( x, y, w, h );
         }
         C.restore();
@@ -1386,7 +1326,7 @@ function addFace( blink, bIdx )
                 addBrow( e2[0], e2[1], 0, blink );
 
                 // LASHES
-                if ( GENDER === 1 )
+                if ( GENDER === 1 && !blink )
                 {
                         addLashes( e1, e2, WINK );
                 }
@@ -1461,7 +1401,7 @@ function addRetroBG()
                         {
                                 offset = [ step*i+z(80), step*j+z(80) ];
                                 shape = { verts: shapes[k], fillStyle:c[k] };
-                                addShape( shape, [1,1], offset );
+                                addShape( shape, [1,1], offset, C );
                         }
                 }
         }
@@ -1480,13 +1420,20 @@ function addLaserBG()
         {
                 C.fillRect( 0, 0, SZ, SZ );
         }
-        var sz = addLasers();
-        fastBlur( sz/8 );
+        var cfg = getLaserConfig();
+        var sz = cfg.maxSz;
+        addLasers( cfg, "#060606", 160 );
+        fastBlur( z(16) );
+        addLasers( cfg, "#111", 40 );
+        fastBlur( z(8) );
+        addLasers( cfg, "#1a1a1a", 10 );
+        fastBlur( z(2) );
 }
 function addFractBG()
 {
         var i = urandint() % CD.colors.length;
         addPerlinNoise( CD.colors[i] );
+        if ( DEV ) return;
         fastBlur( z(4) );
 }
 function addCurtainBG()
@@ -1544,12 +1491,13 @@ function addBG( bIdx )
 
         C.save();
         var funcs = [ addLaserBG, addFractBG, addClassicBG, addCurtainBG, addBrinkBG, addRetroBG ];
-        var func = chooseAtRandom( funcs );
+        var func = ( DEV ? funcs[0] : chooseAtRandom(funcs) );
         func();
         log( "Background Type: " + func.name );
         C.restore();
 
         addCloud();
+        if ( rand() > 0.5 ) addHands();
         if ( func.name !== "addClassicBG" ) addVignette(0.5);
         saveImg( bIdx );
         imgBuff[0] = imgBuff[bIdx];
@@ -1560,10 +1508,7 @@ function addBG( bIdx )
 // GOVERNANCE
 function handleKeys( e )
 {
-        if ( e.code === "Space" )
-        {
-                main();
-        }
+        if ( e.code === "Space" ) main();
 }
 function init()
 {
@@ -1669,10 +1614,7 @@ function render( blink )
 }
 function main(n)
 {
-        if ( n )
-        {
-                setDebug(n);
-        }
+        if ( n ) setDebug(n);
         init();
         render();
 }
